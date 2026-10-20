@@ -4,7 +4,7 @@
 
 Add BsonLite to your project, connect once and work with documents through collections. BsonLite manages the local database engine, connection settings and encrypted storage.
 
-[Documentation](https://bsonlite.com/docs/index.html) · [Query examples](https://bsonlite.com/queries.html) · [Website](https://bsonlite.com/) · [GitHub](https://github.com/MohammadAtikurRahman/Bsonlite-SDK)
+[Documentation](https://bsonlite.com/docs/index.html) · [Download desktop software](https://github.com/MohammadAtikurRahman/BsonLite-Console/releases/tag/v0.2.0) · [Console & CLI guide](https://bsonlite.com/console.html) · [Discord](https://discord.gg/vSRMRPYqs) · [GitHub](https://github.com/MohammadAtikurRahman/Bsonlite-SDK)
 
 ## Requirements
 
@@ -12,7 +12,7 @@ Add BsonLite to your project, connect once and work with documents through colle
 - Node.js 20 or later.
 - A private, writable data location, normally on NTFS.
 
-The prepared npm package is **0.6.0-rc.3**. It preserves the tested **SDK 0.6.0-rc.1** native core and adds automatic local connections for **BsonLite Console 0.2.0**. The native database engine and storage format are unchanged. Before this version is published to npm, install the supplied `.tgz` file locally. See [validation results](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/TEST_RESULTS.md) for the scope of testing.
+This release is **npm SDK 0.6.0-rc.3**, with automatic connections for **BsonLite Console 0.2.0** and its terminal CLI. It preserves the tested **SDK 0.6.0-rc.1** native core and database format. Automatic discovery requires this npm release or the integrated standalone SDK download. See [validation results](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/TEST_RESULTS.md) for test coverage.
 
 ## Installation
 
@@ -22,13 +22,77 @@ npm install bsonlite-sdk
 
 The SDK includes its engine and JavaScript dependencies. Users do not need to install a separate database, Python or a compiler. Installing or importing the package does not start a database or insert records.
 
+To update an existing project after this release is published:
+
+```sh
+npm install bsonlite-sdk@latest
+```
+
+Restart your app after updating. Before `0.6.0-rc.3` is published, the registry can still return `0.6.0-rc.2`; check with `npm view bsonlite-sdk version`, or install the offline SDK tarball from the full download. An SDK package does not install the desktop software or a global CLI command.
+
 ## Automatic BsonLite Console connection
 
 Keep your current `BsonLite.connect(...)` code. After updating the SDK once, run your app and open BsonLite Console 0.2.0. The running database appears automatically, the URL is filled in, and **Connect** opens it. With several apps, choose the database from the dropdown. No extra bridge package, copied token, or project-folder selection is required.
 
-Single-file users can use the supplied integrated `BsonLite.cjs`. This npm package instead loads the preserved native core through `index.cjs` and the bundled `auto-console.cjs` adapter. Importing it does not start a database; the local endpoint starts only after connecting. `BsonLite.stop()` and `database.close()` remove their local sessions. Closing the viewer leaves the app running.
+For npm, keep `require('bsonlite-sdk')` or `import BsonLite from 'bsonlite-sdk'`; these load the Console adapter automatically. The internal `BsonLite.cjs` inside `node_modules` is the preserved native core. Single-file users should download the integrated CJS from the release instead of copying that internal file.
 
-Records live in a private current-account application-data directory and contain a rotating loopback token, not native engine credentials/private keys. There is no LAN listener. The viewer starts read-only. To disable automatic viewer access, set `BSONLITE_CONSOLE=0` or add `console: false` to your existing connection options. Windows runtime verification of this new feature is pending; the automatic flow is tested separately from the existing native-engine validation. See `CONSOLE_BN.md` and `console-build.json`.
+Importing the SDK does not start a database; its local Console connection starts only after connecting. `BsonLite.stop()` and `database.close()` remove their local sessions. Closing the viewer leaves the app running.
+
+Records live in a private current-account application-data directory and contain a fresh per-connection loopback token, not native engine credentials/private keys. The viewer starts read-only. To disable automatic viewer access, set `BSONLITE_CONSOLE=0` or add `console: false` to your existing connection options. See [বাংলা Console guide](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/CONSOLE_BN.md), `console-build.json` and the Windows compatibility workflow for implementation and validation details.
+
+## Download the desktop software
+
+[Download BsonLite Console for Windows x64](https://github.com/MohammadAtikurRahman/BsonLite-Console/releases/download/v0.2.0/BsonLite-Console-0.2.0-Windows-x64.zip).
+
+1. Extract the ZIP and run `BsonLite-Console-0.2.0-Windows-x64.exe`. This portable viewer includes its runtime; it does not need a separate Node.js installation.
+2. Start your app with the updated npm SDK and leave it running under the same Windows account.
+3. Choose the app in **Running BsonLite databases**, then click **Connect**. The connection URL is filled automatically.
+
+The desktop app includes a collection explorer, document table/JSON views, filter/sort, pagination, indexes, collection creation, result export and a query console. To insert/update/delete, turn off **Read-only** in Options and apply/reconnect. You can also enter an authorized direct server URL and configure its TLS certificates in Options.
+
+| Download | Use it for |
+| --- | --- |
+| [Console only](https://github.com/MohammadAtikurRahman/BsonLite-Console/releases/download/v0.2.0/BsonLite-Console-0.2.0-Windows-x64.zip) | Desktop software and CLI tarball for an existing SDK app or server URL. |
+| [SDK + Console](https://github.com/MohammadAtikurRahman/BsonLite-Console/releases/download/v0.2.0/BsonLite-Easy-Connect-0.2.0.zip) | SDK, software, CLI, offline npm SDK tarball, starter and source. |
+| [Single-file SDK](https://github.com/MohammadAtikurRahman/BsonLite-Console/releases/download/v0.2.0/BsonLite.cjs) | Integrated CJS alternative to the npm SDK. |
+
+Console 0.2.0 is an unsigned preview. [Full Electron source and build instructions](https://github.com/MohammadAtikurRahman/BsonLite-Console) are public.
+
+### A running app to try
+
+After installing the SDK in your project, this supplied example starts a separate demo database and a local health server:
+
+```powershell
+node node_modules/bsonlite-sdk/examples/console-app.cjs
+```
+
+It uses `./BsonLiteConsoleDemo`, inserts no records automatically and serves `http://127.0.0.1:3000/health`. Leave that terminal open, then connect from Console or the CLI. Press Ctrl+C to stop the demo. Existing server/desktop apps can keep their own connection code.
+
+## Terminal CLI
+
+The Console ZIP includes `packages/bsonlite-cli-0.2.0.tgz`. Open a terminal in the extracted Console folder:
+
+```powershell
+npm install -g ./packages/bsonlite-cli-0.2.0.tgz
+bsonlite
+```
+
+The CLI requires Node.js **20.19+**. With one running updated SDK app, it finds the database automatically. With several, choose from its list. An explicit `--uri` or `BSONLITE_URI` is also accepted. The supplied tarball installs the `bsonlite` command; it does not imply that `bsonlite-cli` is published on npm.
+
+```powershell
+bsonlite --eval "db.users.countDocuments({})"
+bsonlite --write
+```
+
+Run each query separately in the CLI or desktop query console:
+
+```javascript
+db.users.insertOne({ name: 'Atik', active: true, createdAt: ISODate() })
+db.users.find({ active: true }).limit(25)
+db.users.updateOne({ name: 'Atik' }, { $set: { active: false } })
+```
+
+Inserting the first document creates the collection. The CLI starts read-only; use `--write` for changes. This query console accepts one database expression at a time, rather than arbitrary JavaScript programs. See the [Console README](https://github.com/MohammadAtikurRahman/BsonLite-Console#query-console) for supported operations.
 
 ## Quick start
 
@@ -225,6 +289,8 @@ Clean Windows Home/Pro PCs, packaged Electron applications and independent secur
 | Queries | [Query library](https://bsonlite.com/queries.html) |
 | Recovery | [Backup and restore](https://bsonlite.com/docs/backup-restore.html) |
 | Compatibility | [Supported features and limits](https://bsonlite.com/docs/compatibility.html) |
+| Desktop software & CLI | [Console and connection guide](https://bsonlite.com/console.html) |
+| বাংলা Console guide | [npm SDK-এর সঙ্গে Console ব্যবহার](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/CONSOLE_BN.md) |
 
 ## Licenses and matching source
 
@@ -236,7 +302,37 @@ This distribution includes the exact matching modified engine source at `source/
 
 This repository contains the npm distribution, tests and package metadata. See [the publishing guide](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/PUBLISH_BN.md), including how to approve a staged release and make this README appear on npm.
 
+From this repository folder, the prepared version is already `0.6.0-rc.3`:
+
+```powershell
+git pull --ff-only origin main
+npm pkg get name version
+npm test
+npm run verify
+npm stage publish --access public --tag latest
+```
+
+After npm's review finishes, inspect and approve the **new** stage ID:
+
+```powershell
+npm stage list bsonlite-sdk
+npm stage view STAGE_ID
+npm stage approve STAGE_ID
+npm view bsonlite-sdk version
+```
+
+Replace `STAGE_ID` with the ID returned by this upload and complete npm's browser/2FA authentication. Staged publishing requires npm CLI 11.15+ and Node.js 22.14+; Node.js 24 is a suitable publishing environment. Approval publishes the package and its README to npm. Use `npm login` first if `npm whoami` shows you are not signed in.
+
+Tests and packing preserve the validated SDK bytes. Existing Windows Git checkouts with CRLF conversion are repaired only when LF normalization exactly matches the recorded checksum. Other source changes are refused and left intact. The Windows workflow installs the actual packed SDK in an isolated project and checks its native engine with the pinned Console/CLI source. See `TEST_RESULTS.md`.
+
+## Contribute
+
+- [BsonLite](https://github.com/MohammadAtikurRahman/BsonLite): core SDK and engine integration.
+- [Bsonlite-SDK](https://github.com/MohammadAtikurRahman/Bsonlite-SDK): npm packaging, exports and documentation.
+- [BsonLite-Console](https://github.com/MohammadAtikurRahman/BsonLite-Console): Electron GUI, terminal CLI and build tools.
+
 ## Contact
 
 Website: https://bsonlite.com/  
 Email: info@bsonlite.com
+Discord: https://discord.gg/vSRMRPYqs

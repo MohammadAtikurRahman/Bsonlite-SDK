@@ -1,84 +1,76 @@
-# npm publishing guide
+# bsonlite-sdk 0.6.0-rc.3 — npm-এ প্রকাশ
 
-## বর্তমান release
+এই release-এ BsonLite Console 0.2.0 desktop software ও terminal CLI-এর automatic connection আছে। Native engine/core 0.6.0-rc.1 অপরিবর্তিত। Package version ইতিমধ্যে **0.6.0-rc.3**; এখন আবার npm version চালানোর প্রয়োজন নেই।
 
-- npm package: `bsonlite-sdk@0.6.0-rc.2`
-- Embedded SDK: `0.6.0-rc.1`
-- SDK binary, build-info.json, validation.json, source archive ও checksums অপরিবর্তিত।
+## ১. Pull ও পরীক্ষা
 
-npm package version এবং embedded SDK build version আলাদা হতে পারে। `package.json`-এর `bsonlite.sdkVersion` দিয়ে matching SDK build যাচাই করা হয়; `npm version` চালিয়ে build-info.json বা checksum বদলাতে হবে না।
-
-## E409: Cannot stage previously published version
-
-`0.6.0-rc.1` registry-তে আগে ব্যবহৃত হয়েছিল বলে npm সেটি আর গ্রহণ করছে না। Public version list-এ বা pending stage list-এ না থাকলেও previously published version আবার ব্যবহার করা যায় না। `--force`, cache clean বা login করে এই নিয়ম এড়ানো যায় না।
-
-এই কারণে নতুন package release `0.6.0-rc.2` প্রস্তুত করা হয়েছে।
-
-## Pull, test ও stage
-
-Repository checkout-এ চালান:
+যে repository folder-এ package.json আছে, সেখানে PowerShell খুলে চালাও:
 
 ```powershell
-git pull origin main
-npm pkg get name version bsonlite
+git pull --ff-only origin main
+npm pkg get name version
 npm test
 npm run verify
-npm stage publish --access public --tag latest
 ```
 
-Expected package version: `0.6.0-rc.2`। Local file পুরোনো থাকলে stage করবেন না। Uncommitted local changes থাকলে আগে সেগুলো সংরক্ষণ/merge করুন; reset --hard প্রয়োজন নেই।
+Name হবে bsonlite-sdk, version হবে 0.6.0-rc.3। Local changes থাকায় pull আটকে গেলে সেগুলো সংরক্ষণ/merge করো; reset --hard দিয়ে মুছবে না। npm test পুরোনো Windows checkout-এর CRLF line ending ঠিক করতে পারে, তবে শুধু recorded checksum-এর সঙ্গে সম্পূর্ণ মিললে। নিজের code edit বা অন্য mismatch overwrite করবে না।
 
-Staged publishing-এর জন্য npm CLI 11.15.0+ এবং Node.js 22.14.0+ লাগে। SDK ব্যবহারকারীদের minimum runtime এখনও Node.js 20+।
+## ২. npm account ও CLI
 
-## Approve
+```powershell
+node --version
+npm --version
+npm whoami
+```
 
-Stage সফল হলে returned stage ID review করুন:
+Staged publishing-এর জন্য Node.js 22.14+ ও npm 11.15+ প্রয়োজন। Node.js 24 ব্যবহার করতে পারো। এটি প্রকাশকের environment; SDK ব্যবহারকারীর Node.js requirement 20+। npm whoami-এ login না থাকলে npm login করে নিজের browser-এ authentication সম্পন্ন করো।
+
+## ৩. Stage upload
 
 ```powershell
 npm stage list bsonlite-sdk
-npm stage view <stage-id>
-npm stage approve <stage-id>
+npm stage publish --access public --tag latest
 ```
 
-`<stage-id>`-এর জায়গায় returned ID বসাতে হবে। Approval-এর সময় নিজের 2FA সম্পন্ন করুন। Website থেকে চাইলে নিজের npm account-এর **Staged Packages** tab-এ package review করে **Approve** করা যায়।
+আগে একই rc.3-এর pending stage থাকলে সেটির details দেখে নাও; একই version বারবার upload করবে না। Fresh upload সফল হলে npm একটি নতুন stage ID দেবে। সেটি ব্যবহার করবে, আগের rc.2-এর ID নয়।
 
-Stage তৈরি করলেই public installable release হয় না। Approval-ই আসল প্রকাশের ধাপ। `latest` tag ইচ্ছাকৃত: সাধারণ `npm install bsonlite-sdk` এই release candidate পাবে।
+## ৪. Review শেষ হলে approve
 
-কোনো `rc.2` pending stage আগে থেকেই থাকলে একই version আবার submit করবেন না; আগে সেটি inspect করুন। সঠিক content হলে approve করুন। পুরোনো content হলে শুধু নিজের matching pending stage-টি `npm stage reject <stage-id>` দিয়ে সরিয়ে তারপর আবার stage করা যায়। Previously published version reject/unpublish করে reuse করা যায় না।
+```powershell
+npm stage view STAGE_ID
+npm stage approve STAGE_ID
+```
 
-## npm page-এ placeholder / README
+STAGE_ID-এর জায়গায় এই upload-এর নতুন UUID বসাও। Browser authentication ও 2FA নিজের account থেকে সম্পন্ন করো। Automated review চলতে থাকলে approve এখনই হবে না; review শেষ হওয়ার পর একই ID দিয়ে আবার approve করো। নতুন করে stage/version তৈরি করার প্রয়োজন নেই। চাইলে npmjs.com-এর Staged Packages থেকে একই package review ও approve করা যায়।
 
-`0.0.0-stage` ও **Temporary Holding Version** staging-এর placeholder। আসল package approve না হওয়া পর্যন্ত তার README ও metadata public npm page-এ আসে না।
+Stage upload করলেই public release হয় না। Approve হওয়ার পর package এবং এই README npm page-এ আসবে। latest tag ইচ্ছাকৃত, যাতে সাধারণ npm install bsonlite-sdk এই release পায়।
 
-GitHub README push/pull করলেই npm-এ থাকা পুরোনো tarball বদলায় না। এই commit-এর README পেতে এই checkout থেকেই নতুন version stage করতে হবে।
-
-## Public result যাচাই
+## ৫. প্রকাশ যাচাই
 
 ```powershell
 npm view bsonlite-sdk version
-npm view bsonlite-sdk dist-tags versions --json
+npm view bsonlite-sdk dist-tags --json
 ```
 
-Approval এবং latest tag সঠিক হলে `0.6.0-rc.2` দেখা যাবে। npm page refresh করে README ও GitHub link দেখুন।
-
-Windows project-এ ব্যবহার:
+latest হবে 0.6.0-rc.3। নিজের app folder-এ update করে app restart করো:
 
 ```powershell
-npm install bsonlite-sdk
+npm install bsonlite-sdk@latest
 ```
 
-```javascript
-const BsonLite = require('bsonlite-sdk');
-```
+Console software download: https://github.com/MohammadAtikurRahman/BsonLite-Console/releases/tag/v0.2.0
 
-## Authentication
+App চালু রাখলে একই Windows account-এর Console/CLI database খুঁজে পাবে। App code-এ require('bsonlite-sdk') ব্যবহার করবে। node_modules থেকে internal BsonLite.cjs আলাদা করে copy করলে automatic adapter বাদ পড়ে যাবে; single-file ব্যবহারের জন্য release-এর integrated CJS download করবে।
 
-প্রয়োজনে `npm login` করুন এবং npmjs.com → Account → Two-Factor Authentication থেকে 2FA setup করুন। Password/token/recovery code GitHub বা chat-এ দেবেন না।
+## সমস্যা হলে
 
-## Distribution source ও licenses
+- E409 previously published version: ওই version reuse করা যাবে না। আগে registry ও pending stage list যাচাই করো; তখন unused release version এবং matching package metadata প্রস্তুত করতে হবে।
+- E409 review unfinished: একই stage-এর review শেষ হওয়া পর্যন্ত অপেক্ষা করে আবার approve করো।
+- E403 / authentication: npm whoami দিয়ে সঠিক publisher account যাচাই করে npm login ও 2FA সম্পন্ন করো।
+- GitHub push করলেই npm-এর আগের version বা README বদলায় না; নতুন version stage ও approve করতে হয়।
 
-এই repository npm distribution-এর জন্য। মূল SDK development source: https://github.com/MohammadAtikurRahman/BsonLite। নতুন binary build করলে তার matching source, build-info ও checksums-ও নিতে হবে। Applicable engine licenses এবং exact matching source public package-এ রাখুন।
+Engine source, licenses, console-build.json এবং SHA256SUMS package-এ রাখবে। শুধু npm version বদলালে native core build version বদলাবে না।
 
-References:
+Official references:
 - https://docs.npmjs.com/staged-publishing/
-- https://docs.npmjs.com/cli/v11/commands/npm-publish/
+- https://docs.npmjs.com/cli/v11/commands/npm-stage/

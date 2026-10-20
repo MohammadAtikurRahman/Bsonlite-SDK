@@ -1,20 +1,21 @@
-# 0.6.0-rc.3
-
-- Automatically announce running databases to BsonLite Console 0.2.0.
-- Existing app connection code and the validated native core remain unchanged.
-- Add private local session cleanup and an explicit Console opt-out.
-- Windows runtime validation for the new Console adapter remains pending.
-
 # Changelog
+
+## npm 0.6.0-rc.3
+
+- Automatically connect running SDK apps to BsonLite Console 0.2.0 and its terminal CLI through private local discovery.
+- Keep the existing connect API, encrypted native core, engine source and storage format unchanged.
+- Document desktop software downloads, terminal installation, writes, a running demo app and the publishing commands.
+- Include an npm-ready Console demo in examples/.
+- Preserve validated bytes across Windows Git checkouts; repair only line endings that match the exact recorded checksum.
+- Verify the Console package entry, exports, metadata and notices before testing, packing or publishing.
+- Add a Windows workflow that installs the actual packed SDK and checks the native engine through the Console adapter and terminal CLI.
 
 ## npm 0.6.0-rc.2
 
-- Publish the updated installation, connection and query documentation under a new npm version after the registry rejected reuse of 0.6.0-rc.1.
-- Point package repository metadata at the public Bsonlite-SDK distribution repository.
-- Declare embedded SDK version separately as `bsonlite.sdkVersion`.
-- Preserve the exact tested SDK 0.6.0-rc.1 binary, engine source, validation record and checksums. No database runtime changes.
+- Publish installation, connection and query documentation under a new npm version after reuse of 0.6.0-rc.1 was rejected.
+- Point repository metadata at Bsonlite-SDK and declare embedded SDK version separately.
+- Preserve the tested native SDK, engine source, validation record and checksums.
 
 ## Embedded SDK 0.6.0-rc.1
 
-The existing validated Windows x64 release candidate. See TEST_RESULTS.md and validation.json for evidence and remaining validation work.
-
+The existing Windows x64 native engine baseline. See TEST_RESULTS.md and validation.json for its original evidence and remaining validation scope.

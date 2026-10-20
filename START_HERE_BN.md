@@ -1,3 +1,15 @@
+# npm SDK ও Console দিয়ে শুরু
+
+npm SDK ব্যবহার: npm install bsonlite-sdk। App code-এ require('bsonlite-sdk') ব্যবহার করবে।
+
+Desktop software, terminal CLI ও automatic connect-এর নির্দেশনা: [CONSOLE_BN.md](CONSOLE_BN.md)।
+
+Software download: https://github.com/MohammadAtikurRahman/BsonLite-Console/releases/tag/v0.2.0
+
+নিচের অংশ native single-file SDK-এর পুরোনো starter guide। npm ব্যবহারকারীর জন্য README ও CONSOLE_BN.md-এর installation/entry point প্রযোজ্য।
+
+---
+
 # BsonLite 0.6.0-rc.1 — ব্যবহার শুরু
 
 এই নির্দেশনা সফল Windows build-এর **engine-সহ `BsonLite.cjs`**-এর জন্য। Git checkout বা `build:preview` bundle-এ engine থাকে না। Downloadable native artifact শুধু সব Windows checks পাস করার পর তৈরি হয়; matching commit/run থাকে `validation.json`-এ।

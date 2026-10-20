@@ -23,6 +23,7 @@ async function main() {
   const sdk = consumerRequire('bsonlite-sdk');
   const { discoverConnections } = require(path.join(consoleRoot, 'src/discovery.cjs'));
   const { Connection } = require(path.join(consoleRoot, 'src/connection.cjs'));
+  const { fromJSON } = require(path.join(consoleRoot, 'src/query.cjs'));
   const viewer = new Connection();
   const cli = async (...args) => run(process.execPath, [path.join(consoleRoot, 'bin/bsonlite.cjs'), ...args], {
     cwd: scratch,
@@ -47,7 +48,7 @@ async function main() {
     await viewer.disconnect();
     assert.equal((await sdk.collection('users').countDocuments({})), 1, 'Closing the viewer must leave the app database running.');
 
-    assert.equal(JSON.parse((await cli('--eval', 'db.users.countDocuments({})')).stdout), 1);
+    assert.equal(Number(fromJSON((await cli('--eval', 'db.users.countDocuments({})')).stdout)), 1);
     await assert.rejects(cli('--eval', 'db.users.insertOne({name:"blocked"})'), /Read-only/);
     await cli('--write', '--eval', 'db.users.insertOne({name:"CLI row", n:NumberLong("9223372036854775807")})');
     const cliRow = await sdk.collection('users').findOne({ name: 'CLI row' });
@@ -55,8 +56,8 @@ async function main() {
 
     await viewer.connect({ uri: found[0].uri, readOnly: false });
     await viewer.run('db.users.createIndex({name:1})');
-    assert.equal((await viewer.run('db.users.updateOne({name:"CLI row"},{$set:{active:true}})')).value.modifiedCount, 1);
-    assert.equal((await viewer.run('db.users.deleteOne({name:"CLI row"})')).value.deletedCount, 1);
+    assert.equal(Number((await viewer.run('db.users.updateOne({name:"CLI row"},{$set:{active:true}})')).value.modifiedCount), 1);
+    assert.equal(Number((await viewer.run('db.users.deleteOne({name:"CLI row"})')).value.deletedCount), 1);
     await viewer.disconnect();
     await sdk.stop();
     assert.deepEqual(await discoverConnections({ directory: sessions }), []);
