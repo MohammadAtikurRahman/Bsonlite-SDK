@@ -1,7 +1,7 @@
 {
   "name": "bsonlite-sdk",
   "version": "0.6.0-rc.3",
-  "description": "A portable database SDK for offline Node.js and Windows applications, with automatic setup and encryption.",
+  "description": "A portable database SDK for Node.js and Windows apps, with encryption and automatic BsonLite Console and CLI connections.",
   "main": "./index.cjs",
   "exports": {
     ".": "./index.cjs",
@@ -35,7 +35,9 @@
     "windows",
     "bson",
     "encrypted-storage",
-    "desktop"
+    "desktop",
+    "bsonlite-console",
+    "cli"
   ],
   "files": [
     "BsonLite.cjs",
@@ -52,11 +54,13 @@
     "index.cjs",
     "auto-console.cjs",
     "CONSOLE_BN.md",
-    "console-build.json"
+    "console-build.json",
+    "examples/"
   ],
   "scripts": {
     "test": "node --test test/npm.test.cjs",
     "verify": "node scripts/verify-package.cjs",
+    "test:console": "node scripts/test-console-windows.cjs",
     "prepublishOnly": "node scripts/verify-package.cjs"
   },
   "publishConfig": {

@@ -1,0 +1,50 @@
+name: Packed SDK and Console on Windows
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-console:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: sdk
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: sdk
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: MohammadAtikurRahman/BsonLite-Console
+          ref: f118504cc89f457f4039c6a8757740e86e522331 # Console 0.2.0
+          path: console
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+      - run: npm test
+      - run: npm run verify
+      - name: Install terminal CLI production dependencies
+        working-directory: console
+        run: npm ci --omit=dev --ignore-scripts --no-audit --no-fund
+      - name: Install the actual packed SDK in an isolated project
+        shell: pwsh
+        run: |
+          $packed = npm pack --json --pack-destination $env:RUNNER_TEMP | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $tarball = Join-Path $env:RUNNER_TEMP $packed[0].filename
+          $consumer = Join-Path $env:RUNNER_TEMP 'bsonlite-sdk-consumer'
+          New-Item -ItemType Directory -Force $consumer | Out-Null
+          npm install --prefix $consumer --ignore-scripts --no-audit --no-fund $tarball
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "BSONLITE_SDK_CONSUMER=$consumer" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Native SDK, desktop connection adapter and terminal CLI
+        env:
+          BSONLITE_CONSOLE_SOURCE: ${{ github.workspace }}/console
+        run: npm run test:console
