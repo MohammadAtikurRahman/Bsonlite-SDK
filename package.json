@@ -1,6 +1,6 @@
 {
   "name": "bsonlite-sdk",
-  "version": "0.6.0-rc.1",
+  "version": "0.6.0-rc.2",
   "description": "A portable database SDK for offline Node.js and Windows applications, with automatic setup and encryption.",
   "main": "./BsonLite.cjs",
   "exports": {
@@ -47,7 +47,8 @@
     "SECURITY.md",
     "TEST_RESULTS.md",
     "START_HERE_BN.md",
-    "scripts/verify-package.cjs"
+    "scripts/verify-package.cjs",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "test": "node --test test/npm.test.cjs",
@@ -58,5 +59,8 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/",
     "tag": "latest"
+  },
+  "bsonlite": {
+    "sdkVersion": "0.6.0-rc.1"
   }
 }

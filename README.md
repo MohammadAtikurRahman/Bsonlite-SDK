@@ -12,7 +12,7 @@ Add BsonLite to your project, connect once and work with documents through colle
 - Node.js 20 or later.
 - A private, writable data location, normally on NTFS.
 
-The current SDK is **0.6.0-rc.1**, a release candidate. See [validation results](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/TEST_RESULTS.md) for the scope of testing.
+The npm package version is **0.6.0-rc.2** and includes the unchanged, tested **SDK 0.6.0-rc.1** release candidate. This package update improves documentation and publishing metadata; it does not change the database engine. See [validation results](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/TEST_RESULTS.md) for the scope of testing.
 
 ## Installation
 
