@@ -27,7 +27,7 @@ if (process.argv.includes('--normalize')) {
     const normalized = Buffer.from(bytes.toString('utf8').replace(/\r\n/g, '\n'));
     assert.equal(hash(normalized), expected, name + ': changes exceed Windows line endings; preserve and inspect the local changes.');
     fs.writeFileSync(path.join(root, name), normalized);
-    console.log('Restored validated LF bytes: ' + name);
+    process.stderr.write('Restored validated LF bytes: ' + name + '\n');
   }
 }
 assert.equal(pkg.name, 'bsonlite-sdk');
@@ -63,4 +63,4 @@ assert.ok(sdk.BSON && sdk.ObjectId);
 assert.equal(sdk.consoleVersion, pkg.bsonlite.consoleVersion);
 assert.equal(sdk.connectionURL, null, 'Import must not start an endpoint');
 assert.ok(!pkg.scripts.install && !pkg.scripts.postinstall && !pkg.scripts.preinstall, 'No install scripts expected');
-console.log('Package verified: npm ' + pkg.version + ', SDK ' + pkg.bsonlite.sdkVersion + ', native checksums, matching engine source, licenses and exports.');
+process.stderr.write('Package verified: npm ' + pkg.version + ', SDK ' + pkg.bsonlite.sdkVersion + ', native checksums, matching engine source, licenses and exports.\n');
