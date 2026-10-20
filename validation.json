@@ -1,0 +1,9 @@
+{
+  "repository": "MohammadAtikurRahman/BsonLite",
+  "commit": "1cf4c8d81c271ab85cdadd84ebac998101712ab1",
+  "run": "https://github.com/MohammadAtikurRahman/BsonLite/actions/runs/39260874503",
+  "modifiedEngineSourceSha256": "e25f36487f4041b7ad4480da90db01fba21f74e4c4e6960ddcd5d7d272bc4069",
+  "sourceAndBundledNativeTests": "passed",
+  "earlierFormatTests": "passed",
+  "cleanWindowsHomeAndProTest": "pending"
+}

@@ -1,0 +1,30 @@
+{
+  "name": "bsonlite-sdk",
+  "version": "0.6.0-rc.1",
+  "description": "A portable database SDK for offline Node.js and Windows applications, with automatic setup and encryption.",
+  "main": "./BsonLite.cjs",
+  "exports": {
+    ".": "./BsonLite.cjs",
+    "./package.json": "./package.json"
+  },
+  "engines": { "node": ">=20" },
+  "os": ["win32"],
+  "cpu": ["x64"],
+  "license": "SEE LICENSE IN licenses/SOURCE_AND_NOTICES.md",
+  "author": "Atikur Rahman",
+  "homepage": "https://bsonlite.com/",
+  "repository": { "type": "git", "url": "git+https://github.com/MohammadAtikurRahman/BsonLite.git" },
+  "bugs": { "email": "info@bsonlite.com" },
+  "keywords": ["bsonlite", "database", "offline", "nodejs", "windows", "bson", "encrypted-storage", "desktop"],
+  "files": [
+    "BsonLite.cjs", "build-info.json", "validation.json", "SHA256SUMS.txt",
+    "licenses/", "source/", "SECURITY.md", "TEST_RESULTS.md", "START_HERE_BN.md",
+    "scripts/verify-package.cjs"
+  ],
+  "scripts": {
+    "test": "node --test test/npm.test.cjs",
+    "verify": "node scripts/verify-package.cjs",
+    "prepublishOnly": "node scripts/verify-package.cjs"
+  },
+  "publishConfig": { "access": "public", "registry": "https://registry.npmjs.org/", "tag": "latest" }
+}

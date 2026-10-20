@@ -1,0 +1,23 @@
+{
+  "bsonliteVersion": "0.6.0-rc.1",
+  "engineVersion": "4.0.28",
+  "nativeReady": true,
+  "distributionMode": "native-encrypted",
+  "platform": "win32",
+  "arch": "x64",
+  "engineSha256": "bf9403e543d1c75f54e7b6ffcce836ab28d4725b58842ae92870c63f7da33e1c",
+  "engineBytes": 25798656,
+  "compressedEngineBytes": 11250967,
+  "distributionBytes": 17680214,
+  "optionalFeaturesNotIncluded": [
+    "kerberos",
+    "@mongodb-js/zstd",
+    "@aws-sdk/credential-providers",
+    "gcp-metadata",
+    "snappy",
+    "socks",
+    "aws4",
+    "mongodb-client-encryption"
+  ],
+  "builtAt": "2026-10-19T13:35:26.692Z"
+}

@@ -1,0 +1,2 @@
+7e195c261a0bafe9d93b4afe8536d18e4006298c16d125a27093c1bbdd99309f  BsonLite.cjs
+1914edf0bfa7299be83175b8e2cfaadf2cd60257ba557e4aed95b5232052cffb  build-info.json
