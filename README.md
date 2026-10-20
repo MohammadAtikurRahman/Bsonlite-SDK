@@ -1,20 +1,32 @@
 # BsonLite
 
-A portable database SDK for offline Node.js and Windows applications. Connect once, work with collections and let BsonLite manage local setup and encryption.
+**A portable database SDK for Node.js and Windows applications.**
 
-**Windows x64 · Node.js 20+ · Release candidate 0.6.0-rc.1**
+Add BsonLite to your project, connect once and work with documents through collections. BsonLite manages the local database engine, connection settings and encrypted storage.
 
-## Install
+[Documentation](https://bsonlite.com/docs/index.html) · [Query examples](https://bsonlite.com/queries.html) · [Website](https://bsonlite.com/) · [GitHub](https://github.com/MohammadAtikurRahman/Bsonlite-SDK)
+
+## Requirements
+
+- Windows x64: Windows 10 version 1903+, Windows 11 or a compatible Windows Server release.
+- Node.js 20 or later.
+- A private, writable data location, normally on NTFS.
+
+The current SDK is **0.6.0-rc.1**, a release candidate. See [validation results](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/TEST_RESULTS.md) for the scope of testing.
+
+## Installation
 
 ```sh
 npm install bsonlite-sdk
 ```
 
-The engine and JavaScript dependencies are bundled. No separate database installation, engine download, install script or compiler is required. Installing the package does not start a database or create application records.
+The SDK includes its engine and JavaScript dependencies. Users do not need to install a separate database, Python or a compiler. Installing or importing the package does not start a database or insert records.
 
-## Connect and query
+## Quick start
 
-```js
+Create an `index.cjs` file:
+
+```javascript
 const BsonLite = require('bsonlite-sdk');
 
 async function main() {
@@ -23,11 +35,13 @@ async function main() {
 
     const notes = BsonLite.collection('notes');
     const result = await notes.insertOne({
-      title: 'My first note',
+      title: 'My first BsonLite note',
+      completed: false,
       createdAt: new Date()
     });
 
-    console.log(await notes.findOne({ _id: result.insertedId }));
+    const note = await notes.findOne({ _id: result.insertedId });
+    console.log(note);
   } finally {
     await BsonLite.stop();
   }
@@ -39,52 +53,182 @@ main().catch(error => {
 });
 ```
 
-ES modules can use the same SDK:
+Run it:
 
-```js
-import BsonLite from 'bsonlite-sdk';
-
-await BsonLite.connect();
-// Start the application after connecting.
-// On application shutdown:
-await BsonLite.stop();
+```sh
+node index.cjs
 ```
 
-Connect once at application startup. Other modules can `require('bsonlite-sdk')` and use `BsonLite.collection('notes')` after initialization. For a server or desktop app, keep the connection open until the application exits. Importing the package alone does not start the engine.
+This demonstration inserts one note, reads it and stops the database. For a server or desktop application, connect during startup and keep the connection open until shutdown.
 
-## Collections and BSON
+### ES modules
 
-```js
-// Run these operations after connecting.
+Use an `.mjs` file or a project configured with `"type": "module"`:
+
+```javascript
+import BsonLite from 'bsonlite-sdk';
+
+try {
+  await BsonLite.connect();
+  const notes = await BsonLite.collection('notes').find({}).limit(10).toArray();
+  console.log(notes);
+} finally {
+  await BsonLite.stop();
+}
+```
+
+## Query examples
+
+Run the following operations after `await BsonLite.connect()`. Close the database when your application finishes.
+
+### Insert
+
+```javascript
 const users = BsonLite.collection('users');
 
-await users.createIndex({ email: 1 }, { unique: true });
-await users.insertOne({ name: 'Atik', email: 'atik@example.com' });
-const activeUsers = await users.find({ active: true }).limit(20).toArray();
-await users.updateOne({ email: 'atik@example.com' }, { $set: { active: true } });
-await users.deleteOne({ email: 'atik@example.com' });
+await users.insertOne({
+  name: 'Atik',
+  email: 'atik@example.com',
+  active: true
+});
+```
 
+### Find, filter and sort
+
+```javascript
+const activeUsers = await BsonLite.collection('users')
+  .find({ active: true })
+  .sort({ name: 1 })
+  .limit(20)
+  .toArray();
+
+const user = await BsonLite.collection('users').findOne({
+  email: 'atik@example.com'
+});
+```
+
+### Update
+
+```javascript
+await BsonLite.collection('users').updateOne(
+  { email: 'atik@example.com' },
+  { $set: { name: 'Atikur Rahman' } }
+);
+```
+
+### Delete
+
+```javascript
+await BsonLite.collection('users').deleteOne({
+  email: 'atik@example.com'
+});
+```
+
+### Indexes
+
+```javascript
+await BsonLite.collection('users').createIndex(
+  { email: 1 },
+  { unique: true }
+);
+```
+
+### Aggregation
+
+```javascript
+const summary = await BsonLite.collection('users').aggregate([
+  { $match: { active: true } },
+  { $group: { _id: null, total: { $sum: 1 } } }
+]).toArray();
+```
+
+### BSON types
+
+```javascript
 const id = new BsonLite.ObjectId();
 const amount = BsonLite.BSON.Decimal128.fromString('12.50');
+const largeNumber = BsonLite.BSON.Long.fromString('9007199254740993');
+```
+
+BSON utilities are included; no separate BSON package is required for these examples.
+
+## Use across application files
+
+Connect once in your entry point. Other modules can import the same package and use collections after initialization.
+
+**users.cjs**
+
+```javascript
+const BsonLite = require('bsonlite-sdk');
+
+exports.findUser = email =>
+  BsonLite.collection('users').findOne({ email });
+```
+
+**app.cjs**
+
+```javascript
+const BsonLite = require('bsonlite-sdk');
+const { findUser } = require('./users.cjs');
+
+async function main() {
+  try {
+    await BsonLite.connect();
+    console.log(await findUser('atik@example.com'));
+  } finally {
+    await BsonLite.stop();
+  }
+}
+
+main().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});
 ```
 
 ## Storage and security
 
-By default, project data is stored in `./Database`, relative to the application's working directory, not in node_modules. The SDK extracts its engine into private Windows application data and manages the protected key vault, credentials, loopback port and TLS connection. Windows DPAPI protects keys for the current account.
+By default, data is stored in `./Database`, relative to the application's working directory. It is not stored inside `node_modules`.
 
-Keep encrypted backups. Copying the Database folder alone to another computer/account does not transfer the protected key. Use the documented backup and restore workflow.
+BsonLite extracts its engine into private Windows application data. The SDK manages a local loopback connection, authentication credentials, TLS and native storage encryption. Windows DPAPI protects the key vault for the current account.
 
-Read [the documentation](https://bsonlite.com/docs/index.html), SECURITY.md and TEST_RESULTS.md for behavior and validation boundaries. Clean Windows Home/Pro, packaged Electron apps and independent security review remain additional validation work. This package does not claim production certification or an independent security audit.
+Use the documented encrypted backup and restore workflow before moving data to another account or computer. Copying the `Database` folder alone does not transfer the protected key.
+
+See [backup and restore](https://bsonlite.com/docs/backup-restore.html) and [security guidance](https://bsonlite.com/security.html).
 
 ## Engine and compatibility
 
-BsonLite is independently developed and is not an official MongoDB product. It bundles a custom MongoDB 4.0.28 engine. Queries, indexes, BSON values and aggregation follow that engine version and the supported standalone configuration; newer-version features are not implied. Server-side JavaScript is disabled. Replica-set transactions and change streams are outside this deployment profile. MongoDB 4.0.28 is end-of-life.
+BsonLite is independently developed and is **not an official MongoDB product**. It uses a custom MongoDB 4.0.28 engine, so queries, BSON values, indexes and aggregation follow the capabilities of that engine and its supported standalone configuration.
+
+- Features introduced in newer engine versions are not implied.
+- Server-side JavaScript is disabled.
+- Replica-set transactions and change streams are outside this standalone profile.
+- MongoDB 4.0.28 is end-of-life.
+
+Clean Windows Home/Pro PCs, packaged Electron applications and independent security review remain additional validation work. The SDK does not claim an independent security audit or production certification.
+
+## Documentation
+
+| Topic | Guide |
+| --- | --- |
+| Installation | [Setup and requirements](https://bsonlite.com/docs/installation.html) |
+| Connections | [Connect once and share collections](https://bsonlite.com/docs/connection.html) |
+| API | [API reference](https://bsonlite.com/docs/api-reference.html) |
+| Queries | [Query library](https://bsonlite.com/queries.html) |
+| Recovery | [Backup and restore](https://bsonlite.com/docs/backup-restore.html) |
+| Compatibility | [Supported features and limits](https://bsonlite.com/docs/compatibility.html) |
 
 ## Licenses and matching source
 
-The BsonLite JavaScript wrapper is MIT licensed. Bundled components retain their own licenses; the MIT license does not relicense the engine. See `licenses/SOURCE_AND_NOTICES.md` and the full accompanying license texts.
+The BsonLite JavaScript wrapper is MIT licensed. Bundled components retain their own licenses; the MIT license does not relicense the engine. Read [component notices](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/licenses/SOURCE_AND_NOTICES.md).
 
-This npm package includes the matching modified engine source archive at `source/BsonLite-native-engine-source.tar.gz`. Its SHA-256 is recorded in `validation.json`. The original tested SDK, build record and checksums are included unchanged.
+This distribution includes the exact matching modified engine source at `source/BsonLite-native-engine-source.tar.gz`, along with the tested SDK, build record and checksums. The engine source hash is recorded in `validation.json`.
+
+## Maintaining this npm distribution
+
+This repository contains the npm distribution, tests and package metadata. See [the publishing guide](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/PUBLISH_BN.md), including how to approve a staged release and make this README appear on npm.
+
+## Contact
 
 Website: https://bsonlite.com/  
-Contact: info@bsonlite.com
+Email: info@bsonlite.com
