@@ -1,4 +1,24 @@
-# BsonLite 0.6.0-rc.1 validation
+# BsonLite validation
+
+## npm SDK 0.6.0-rc.3 with Console 0.2.0
+
+The packed npm SDK passed a real native Windows integration run on **2026-10-20**:
+
+- Tested SDK repository commit: `3801124ab3c0a9ebb9cbe1a0c69bc383dc7e2262`.
+- Successful workflow: https://github.com/MohammadAtikurRahman/Bsonlite-SDK/actions/runs/39447330084.
+- Console/CLI source: `f118504cc89f457f4039c6a8757740e86e522331` (Console 0.2.0).
+- Runner: Windows Server 2022 x64, Node.js 24.21.0, npm 11.19.0.
+
+The workflow ran the npm distribution/import tests, verified the native core/source/checksums, packed the actual package, installed its tarball in an isolated consumer and exercised the embedded encrypted Windows engine. It checked automatic local discovery, a read-only Console connection, explicit write controls, CLI connection without a pasted URL, BSON Long preservation, CRUD/indexes, viewer disconnect without stopping the app, session cleanup on stop, and Console opt-out on reopen.
+
+These checks use the desktop app's shared Connection layer and terminal CLI against the real native engine. They do not claim that the graphical Electron window was exercised on Windows. The earlier actual Electron UI workflow was checked on Linux. Clean Windows Home/Pro machines, packaged application integration and the other limits below remain separate work.
+
+Windows checkout handling preserves the original SDK bytes. Local regression checks converted all five checksummed text files to CRLF and restored the exact recorded bytes, and confirmed that a meaningful local source edit is refused and retained. A publish dry run passed with the Console entry, bundled adapter, guide, running example and matching engine source included. No install scripts or new runtime npm dependencies were added.
+
+Documentation-only commits may follow the tested commit. The native core and compiled Console adapter checksums are unchanged.
+
+## Native SDK 0.6.0-rc.1 baseline
+
 
 The complete native Windows workflow passed on **2026-10-19**, including the actual rebuilt engine, source SDK, final single-file SDK and earlier-format compatibility tests.
 
