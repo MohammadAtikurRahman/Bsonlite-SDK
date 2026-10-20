@@ -1,0 +1,8 @@
+* text=auto eol=lf
+
+# Preserve the validated native SDK and archive byte for byte on Windows too.
+BsonLite.cjs -text
+*.tar.gz -text
+*.tgz -text
+*.png -text
+*.ico -text

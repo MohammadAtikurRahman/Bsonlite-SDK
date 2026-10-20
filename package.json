@@ -58,10 +58,12 @@
     "examples/"
   ],
   "scripts": {
+    "pretest": "node scripts/verify-package.cjs --normalize",
     "test": "node --test test/npm.test.cjs",
     "verify": "node scripts/verify-package.cjs",
     "test:console": "node scripts/test-console-windows.cjs",
-    "prepublishOnly": "node scripts/verify-package.cjs"
+    "prepack": "node scripts/verify-package.cjs --normalize",
+    "prepublishOnly": "node scripts/verify-package.cjs --normalize"
   },
   "publishConfig": {
     "access": "public",
