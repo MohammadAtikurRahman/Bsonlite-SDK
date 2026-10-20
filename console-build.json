@@ -1,0 +1,8 @@
+{
+  "consoleVersion": "0.2.0",
+  "baselineSDKVersion": "0.6.0-rc.1",
+  "npmVersion": "0.6.0-rc.3",
+  "baselineSHA256": "7e195c261a0bafe9d93b4afe8536d18e4006298c16d125a27093c1bbdd99309f",
+  "nativeEngineChanged": false,
+  "sdkSHA256": "e04862cbbbf76b27a7463020f471962af549ad7209146cd6e24ae18b697d088e"
+}

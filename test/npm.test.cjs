@@ -15,6 +15,8 @@ test('CommonJS and ESM package imports expose the same SDK', async () => {
   const esm = await import('bsonlite-sdk');
   assert.equal(esm.default, sdk);
   assert.equal(typeof sdk.connect, 'function');
+  assert.equal(sdk.consoleVersion, '0.2.0');
+  assert.equal(sdk.connectionURL, null);
   assert.equal(typeof sdk.collection, 'function');
   const oid = new sdk.ObjectId();
   assert.equal(oid.toHexString().length, 24);

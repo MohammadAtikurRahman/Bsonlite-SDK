@@ -1,3 +1,10 @@
+# 0.6.0-rc.3
+
+- Automatically announce running databases to BsonLite Console 0.2.0.
+- Existing app connection code and the validated native core remain unchanged.
+- Add private local session cleanup and an explicit Console opt-out.
+- Windows runtime validation for the new Console adapter remains pending.
+
 # Changelog
 
 ## npm 0.6.0-rc.2
@@ -10,3 +17,4 @@
 ## Embedded SDK 0.6.0-rc.1
 
 The existing validated Windows x64 release candidate. See TEST_RESULTS.md and validation.json for evidence and remaining validation work.
+

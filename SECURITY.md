@@ -38,3 +38,7 @@ Do not steal incomplete/live locks or delete data to solve startup errors. `reco
 ## Release requirements
 
 The Windows workflow must compile and test the actual full engine, including actual aggregation spill files and a standalone CJS consumer. A clean Windows Home/Pro PC, parent Electron packaging, native prerequisites, crash/power-loss behavior, restore procedures and independent cryptography/storage review remain release gates beyond CI. Source-preview bundles contain no encrypted Windows executable; delivered native artifacts must have a matching successful validation record.
+
+## Automatic local Console access (0.6.0-rc.3)
+
+After connection, the optional adapter creates a bearer-token HTTP endpoint bound to 127.0.0.1 only. The private current-account session registry permits Console 0.2.0 to discover it without exposing native engine passwords or TLS keys. This Console endpoint is separate from the native engine's mutually authenticated TLS connection. Current-account users with access to the token may read/write the exposed database; the viewer itself starts read-only. Disable announcement using console:false at initial startup or BSONLITE_CONSOLE=0. Changing this setting on a running shared connection requires stopping first. Sessions are removed on ordinary shutdown and ignored when stale or closed. Windows runtime verification of the new adapter is pending.

@@ -12,7 +12,7 @@ Add BsonLite to your project, connect once and work with documents through colle
 - Node.js 20 or later.
 - A private, writable data location, normally on NTFS.
 
-The npm package version is **0.6.0-rc.2** and includes the unchanged, tested **SDK 0.6.0-rc.1** release candidate. This package update improves documentation and publishing metadata; it does not change the database engine. See [validation results](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/TEST_RESULTS.md) for the scope of testing.
+The prepared npm package is **0.6.0-rc.3**. It preserves the tested **SDK 0.6.0-rc.1** native core and adds automatic local connections for **BsonLite Console 0.2.0**. The native database engine and storage format are unchanged. Before this version is published to npm, install the supplied `.tgz` file locally. See [validation results](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/TEST_RESULTS.md) for the scope of testing.
 
 ## Installation
 
@@ -21,6 +21,14 @@ npm install bsonlite-sdk
 ```
 
 The SDK includes its engine and JavaScript dependencies. Users do not need to install a separate database, Python or a compiler. Installing or importing the package does not start a database or insert records.
+
+## Automatic BsonLite Console connection
+
+Keep your current `BsonLite.connect(...)` code. After updating the SDK once, run your app and open BsonLite Console 0.2.0. The running database appears automatically, the URL is filled in, and **Connect** opens it. With several apps, choose the database from the dropdown. No extra bridge package, copied token, or project-folder selection is required.
+
+Single-file users can use the supplied integrated `BsonLite.cjs`. This npm package instead loads the preserved native core through `index.cjs` and the bundled `auto-console.cjs` adapter. Importing it does not start a database; the local endpoint starts only after connecting. `BsonLite.stop()` and `database.close()` remove their local sessions. Closing the viewer leaves the app running.
+
+Records live in a private current-account application-data directory and contain a rotating loopback token, not native engine credentials/private keys. There is no LAN listener. The viewer starts read-only. To disable automatic viewer access, set `BSONLITE_CONSOLE=0` or add `console: false` to your existing connection options. Windows runtime verification of this new feature is pending; the automatic flow is tested separately from the existing native-engine validation. See `CONSOLE_BN.md` and `console-build.json`.
 
 ## Quick start
 

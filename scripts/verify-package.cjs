@@ -32,5 +32,7 @@ for (const name of ['SOURCE_AND_NOTICES.md', 'BsonLite-MIT.txt', 'MongoDB-SSPL-1
 const sdk = require(path.join(root, pkg.main));
 for (const name of ['connect', 'collection', 'stop', 'backup', 'restore']) assert.equal(typeof sdk[name], 'function', name);
 assert.ok(sdk.BSON && sdk.ObjectId);
+assert.equal(sdk.consoleVersion, pkg.bsonlite.consoleVersion);
+assert.equal(sdk.connectionURL, null, 'Import must not start an endpoint');
 assert.ok(!pkg.scripts.install && !pkg.scripts.postinstall && !pkg.scripts.preinstall, 'No install scripts expected');
 console.log('Package verified: npm ' + pkg.version + ', SDK ' + pkg.bsonlite.sdkVersion + ', native checksums, matching engine source, licenses and exports.');
