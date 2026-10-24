@@ -42,6 +42,14 @@ test('a prepared fixture preserves matching source, next tag and inert CJS/ESM e
   assert.equal(fs.existsSync(path.join(f.out,'auto-console.cjs')),false,'The integrated adapter must not be wrapped twice');
   const check = spawnSync(process.execPath,['scripts/verify-modern.cjs'],{cwd:f.out,encoding:'utf8'});
   assert.equal(check.status,0,check.stderr);
+  assert(process.env.npm_execpath, 'Run this suite through npm run test:modern-preparation');
+  const packed = spawnSync(process.execPath,[process.env.npm_execpath,'pack','--pack-destination',path.dirname(f.out)],{cwd:f.out,encoding:'utf8'});
+  assert.equal(packed.status,0,packed.stderr);
+  const unpacked = path.join(path.dirname(f.out),'unpacked');fs.mkdirSync(unpacked);
+  const extract = spawnSync('tar',['-xzf',path.join(path.dirname(f.out),'bsonlite-sdk-0.7.0-alpha.0.tgz'),'-C',unpacked],{encoding:'utf8'});
+  assert.equal(extract.status,0,extract.stderr);
+  const packedCheck = spawnSync(process.execPath,['scripts/verify-modern.cjs'],{cwd:path.join(unpacked,'package'),encoding:'utf8'});
+  assert.equal(packedCheck.status,0,packedCheck.stderr);
   fs.appendFileSync(path.join(f.out,'BsonLite.cjs'),'\n// changed');
   const damaged = spawnSync(process.execPath,['scripts/verify-modern.cjs'],{cwd:f.out,encoding:'utf8'});
   assert.equal(damaged.status,1);assert.match(damaged.stderr,/checksum mismatch/);
