@@ -1,5 +1,10 @@
 # bsonlite-sdk 0.6.0-rc.3 — npm-এ প্রকাশ
 
+**এই version ইতিমধ্যে npm-এ published।** নিচের নির্দেশনা ওই release-এর
+ঐতিহাসিক guide; একই version আবার stage/publish করবেন না। আধুনিক engine-এর
+নতুন `0.7.0` prerelease প্রস্তুত ও প্রকাশ করতে [MODERN_ENGINE_BN.md](MODERN_ENGINE_BN.md)
+দেখুন। শুধু এই checkout-এর version বদলালে engine upgrade হবে না।
+
 এই release-এ BsonLite Console 0.2.0 desktop software ও terminal CLI-এর automatic connection আছে। Native engine/core 0.6.0-rc.1 অপরিবর্তিত। Package version ইতিমধ্যে **0.6.0-rc.3**; এখন আবার npm version চালানোর প্রয়োজন নেই।
 
 ## ১. Pull ও পরীক্ষা

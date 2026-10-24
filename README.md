@@ -35,7 +35,7 @@ To update an existing project after this release is published:
 npm install bsonlite-sdk@latest
 ```
 
-Restart your app after updating. Before `0.6.0-rc.3` is published, the registry can still return `0.6.0-rc.2`; check with `npm view bsonlite-sdk version`, or install the offline SDK tarball from the full download. An SDK package does not install the desktop software or a global CLI command.
+Restart your app after updating. Check the registry version with `npm view bsonlite-sdk version`, or install the offline SDK tarball from the full download. An SDK package does not install the desktop software or a global CLI command.
 
 ## Automatic BsonLite Console connection
 
@@ -307,28 +307,22 @@ This distribution includes the exact matching modified engine source at `source/
 
 ## Maintaining this npm distribution
 
-This repository contains the npm distribution, tests and package metadata. See [the publishing guide](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/PUBLISH_BN.md), including how to approve a staged release and make this README appear on npm.
-
-From this repository folder, the prepared version is already `0.6.0-rc.3`:
+This repository contains the published 0.6 distribution, package tests and the
+modern npm preparation tools. Verify this checkout with:
 
 ```powershell
 git pull --ff-only origin main
 npm pkg get name version
 npm test
 npm run verify
-npm stage publish --access public --tag latest
 ```
 
-After npm's review finishes, inspect and approve the **new** stage ID:
-
-```powershell
-npm stage list bsonlite-sdk
-npm stage view STAGE_ID
-npm stage approve STAGE_ID
-npm view bsonlite-sdk version
-```
-
-Replace `STAGE_ID` with the ID returned by this upload and complete npm's browser/2FA authentication. Staged publishing requires npm CLI 11.15+ and Node.js 22.14+; Node.js 24 is a suitable publishing environment. Approval publishes the package and its README to npm. Use `npm login` first if `npm whoami` shows you are not signed in.
+Version `0.6.0-rc.3` is already published and must not be uploaded again. For
+the modern engine, follow [modern npm preparation](MODERN_ENGINE_BN.md): use
+the successful core artifact, prepare a new `0.7.0` prerelease, verify it and
+publish under `next` with your npm authentication. Renaming this legacy
+checkout does not upgrade its engine. The [0.6 publishing guide](PUBLISH_BN.md)
+is retained as historical release guidance.
 
 Tests and packing preserve the validated SDK bytes. Existing Windows Git checkouts with CRLF conversion are repaired only when LF normalization exactly matches the recorded checksum. Other source changes are refused and left intact. The Windows workflow installs the actual packed SDK in an isolated project and checks its native engine with the pinned Console/CLI source. See `TEST_RESULTS.md`.
 
