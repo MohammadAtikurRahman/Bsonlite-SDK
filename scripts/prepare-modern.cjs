@@ -64,9 +64,11 @@ async function prepare(options) {
   assert.equal(engineHash, build.engineSha256);
   assert.equal(sourceHash, validation.modifiedEngineSourceSha256); assert.equal(sourceHash, native.sourceArchiveSha256);
   const reportFiles = { sourceNative: 'source-native.xml', runtimeAndMigration: 'runtime.xml', finalNative: 'final-native.xml' };
+  const reportInputs = {};
   for (const [name, count] of Object.entries(requiredReports)) {
     assert.equal(validation.reports?.[name]?.requiredPassed, count, 'Missing runtime validation: ' + name);
-    assert.equal(await digest(input('native/build/modern/' + reportFiles[name])), validation.reports[name].reportSha256);
+    reportInputs[name] = input('native/build/modern/' + reportFiles[name], 4 * 1024 * 1024);
+    assert.equal(await digest(reportInputs[name]), validation.reports[name].reportSha256);
   }
   // Validate every input before reserving a destination. No existing checkout
   // or published 0.6 payload is replaced by this operation.
@@ -88,6 +90,7 @@ async function prepare(options) {
     fs.copyFileSync(sdkFile, path.join(temporary, 'BsonLite.cjs'));
     put('build-info.json', JSON.stringify(build, null, 2) + '\n');
     put('validation.json', JSON.stringify(validation, null, 2) + '\n');
+    for (const [name, file] of Object.entries(reportFiles)) put('validation/' + file, fs.readFileSync(reportInputs[name]));
     put('index.cjs', '"use strict";\nmodule.exports = require("./BsonLite.cjs");\n');
     fs.mkdirSync(path.join(temporary, 'source'));
     fs.copyFileSync(sourceFile, path.join(temporary, 'source/BsonLite-modern-engine-source.tar.gz'));
@@ -102,17 +105,22 @@ async function prepare(options) {
       license: 'SEE LICENSE IN licenses/SOURCE_AND_NOTICES.md', author: 'Atikur Rahman',
       homepage: 'https://bsonlite.com/',
       repository: { type: 'git', url: 'git+https://github.com/MohammadAtikurRahman/Bsonlite-SDK.git' },
-      files: ['BsonLite.cjs', 'index.cjs', 'build-info.json', 'validation.json', 'SHA256SUMS.txt', 'source/', 'licenses/', 'MODERN_VALIDATION.md', 'scripts/verify-modern.cjs'],
+      files: ['BsonLite.cjs', 'index.cjs', 'build-info.json', 'validation.json', 'validation/', 'SHA256SUMS.txt', 'source/', 'licenses/', 'MODERN_VALIDATION.md', 'scripts/verify-modern.cjs'],
       scripts: { test: 'node scripts/verify-modern.cjs', verify: 'node scripts/verify-modern.cjs', prepack: 'node scripts/verify-modern.cjs', prepublishOnly: 'node scripts/verify-modern.cjs' },
       publishConfig: { access: 'public', registry: 'https://registry.npmjs.org/', tag: 'next' },
       bsonlite: { sdkVersion: build.bsonliteVersion, engineVersion: ENGINE, consoleVersion: '0.2.0', experimental: true }
     };
     put('package.json', JSON.stringify(pkg, null, 2) + '\n');
-    put('MODERN_VALIDATION.md', `# Experimental validation\n\nCore commit: ${options.commit}\n\nSuccessful runtime evidence: ${run}\n\nEngine ${ENGINE}, driver ${DRIVER}. Required native/source, migration/CLI and final bundled tests passed (7, 3 and 9 respectively; these overlap). Clean Windows desktop/installer testing and independent security audit are not claimed. See validation.json for hashes and exact reports.\n`);
+    put('MODERN_VALIDATION.md', `# Experimental validation\n\nCore commit: ${options.commit}\n\nSuccessful runtime evidence: ${run}\n\nEngine ${ENGINE}, driver ${DRIVER}. Required native/source, migration/CLI and final bundled tests passed (7, 3 and 9 respectively; these overlap). The original JUnit reports are preserved in validation/source-native.xml, validation/runtime.xml and validation/final-native.xml; their hashes match validation.json and remain available with the package. Clean Windows desktop/installer testing and independent security audit are not claimed.\n`);
     put('README.md', `# BsonLite\n\nExperimental ${version}: a portable database SDK for Node.js and Windows x64 applications. Node.js 20.19+ and Windows build 20348+ are required. This is an independently developed product using a custom MongoDB Community ${ENGINE} engine.\n\n\`\`\`sh\nnpm install bsonlite-sdk@next\n\`\`\`\n\n\`\`\`js\nconst BsonLite = require('bsonlite-sdk');\nasync function main() {\n  try {\n    await BsonLite.connect();\n    console.log(await BsonLite.collection('users').find({}).toArray());\n  } finally { await BsonLite.disconnect(); }\n}\nmain().catch(console.error);\n\`\`\`\n\nConnect once during application startup. Data defaults to ./Database. Import is inert; the package includes its engine and JavaScript dependencies. BsonLite Console 0.2.0 and its CLI can discover a running app automatically. [Desktop software and CLI](https://github.com/MohammadAtikurRahman/BsonLite-Console).\n\nExisting 4.0.28 stores require a logical upgrade into a new directory using the previous SDK. Do not point the new engine at old files. [Upgrade guide](https://github.com/${REPOSITORY}/blob/upgrade/mongodb-9.0/native/modern/UPGRADE_BN.md). Preserve encrypted backups and the matching protected vault.\n\nServer-side JavaScript is disabled. Replica-set transactions, change streams and Atlas-only features are outside this standalone profile. This is an experimental release, with validation and limits in MODERN_VALIDATION.md. Matching modified engine source and component licenses accompany the package.\n`);
-    const names = ['BsonLite.cjs', 'index.cjs', 'package.json', 'build-info.json', 'validation.json', 'README.md', 'MODERN_VALIDATION.md', 'source/BsonLite-modern-engine-source.tar.gz', ...fs.readdirSync(path.join(temporary, 'licenses')).map(n => 'licenses/' + n)];
+    const names = ['BsonLite.cjs', 'index.cjs', 'package.json', 'build-info.json', 'validation.json', 'README.md', 'MODERN_VALIDATION.md', 'source/BsonLite-modern-engine-source.tar.gz', ...Object.values(reportFiles).map(n => 'validation/' + n), ...fs.readdirSync(path.join(temporary, 'licenses')).map(n => 'licenses/' + n)];
     const hashes = {};
     for (const name of names) hashes[name] = await digest(path.join(temporary, name));
+    // Bind the bytes actually copied into the package to the runtime evidence,
+    // including an input changed while preparation was in progress.
+    assert.equal(hashes['BsonLite.cjs'], validation.sdkSha256, 'Copied SDK checksum mismatch');
+    assert.equal(hashes['source/BsonLite-modern-engine-source.tar.gz'], validation.modifiedEngineSourceSha256, 'Copied source checksum mismatch');
+    for (const [name, file] of Object.entries(reportFiles)) assert.equal(hashes['validation/' + file], validation.reports[name].reportSha256, 'Copied runtime report checksum mismatch: ' + name);
     put('scripts/verify-modern.cjs', `'use strict';\nconst fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict');\nconst root=path.resolve(__dirname,'..'),expected=${JSON.stringify(hashes)};\n(async()=>{\n for(const [name,hash] of Object.entries(expected)){const h=crypto.createHash('sha256');for await(const b of fs.createReadStream(path.join(root,name)))h.update(b);assert.equal(h.digest('hex'),hash,name+' checksum mismatch');}\n const pkg=require('../package.json'),sdk=require('../index.cjs');\n assert.equal(pkg.publishConfig.tag,'next');assert.equal(sdk.engineVersion,'${ENGINE}');assert.equal(sdk.driverVersion,'${DRIVER}');assert.equal(sdk.version,pkg.bsonlite.sdkVersion);assert.equal(sdk.consoleVersion,'0.2.0');assert.equal(sdk.connectionURL,null);\n for(const n of ['open','connect','collection','disconnect','backup','restore','upgrade'])assert.equal(typeof sdk[n],'function');\n assert.equal(typeof sdk.BSON.serialize,'function');assert.equal(typeof sdk.BSON.deserialize,'function');\n const esm=await import(require('node:url').pathToFileURL(path.join(root,'index.cjs')).href);assert.equal(esm.default,sdk);\n console.log('Verified experimental '+pkg.version+': SDK, matching source, runtime evidence, licenses and inert CJS/ESM exports.');\n})().catch(e=>{console.error(e.message);process.exitCode=1;});\n`);
     hashes['scripts/verify-modern.cjs'] = await digest(path.join(temporary, 'scripts/verify-modern.cjs'));
     put('SHA256SUMS.txt', Object.entries(hashes).map(([name, hash]) => hash + '  ' + name + '\n').join(''));

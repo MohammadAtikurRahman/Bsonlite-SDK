@@ -40,6 +40,9 @@ test('a prepared fixture preserves matching source, next tag and inert CJS/ESM e
   assert.equal(pkg.publishConfig.tag,'next'); assert.equal(pkg.engines.node,'>=20.19.0');
   assert.equal(pkg.scripts.install,undefined); assert.equal(pkg.scripts.postinstall,undefined);
   assert.equal(fs.existsSync(path.join(f.out,'auto-console.cjs')),false,'The integrated adapter must not be wrapped twice');
+  for (const name of ['source-native.xml','runtime.xml','final-native.xml']) {
+    assert.deepEqual(fs.readFileSync(path.join(f.out,'validation',name)),fs.readFileSync(path.join(f.artifact,'native/build/modern',name)));
+  }
   const check = spawnSync(process.execPath,['scripts/verify-modern.cjs'],{cwd:f.out,encoding:'utf8'});
   assert.equal(check.status,0,check.stderr);
   assert(process.env.npm_execpath, 'Run this suite through npm run test:modern-preparation');
@@ -50,9 +53,23 @@ test('a prepared fixture preserves matching source, next tag and inert CJS/ESM e
   assert.equal(extract.status,0,extract.stderr);
   const packedCheck = spawnSync(process.execPath,['scripts/verify-modern.cjs'],{cwd:path.join(unpacked,'package'),encoding:'utf8'});
   assert.equal(packedCheck.status,0,packedCheck.stderr);
+  fs.appendFileSync(path.join(unpacked,'package/validation/runtime.xml'),'\nchanged');
+  const damagedReport = spawnSync(process.execPath,['scripts/verify-modern.cjs'],{cwd:path.join(unpacked,'package'),encoding:'utf8'});
+  assert.equal(damagedReport.status,1);assert.match(damagedReport.stderr,/validation\/runtime\.xml checksum mismatch/);
   fs.appendFileSync(path.join(f.out,'BsonLite.cjs'),'\n// changed');
   const damaged = spawnSync(process.execPath,['scripts/verify-modern.cjs'],{cwd:f.out,encoding:'utf8'});
   assert.equal(damaged.status,1);assert.match(damaged.stderr,/checksum mismatch/);
+});
+
+test('input changed during copying cannot claim the earlier runtime evidence', async t => {
+  const f = fixture(t), copy = fs.copyFileSync;
+  const sdk = path.join(fs.realpathSync(f.artifact),'dist-modern','BsonLite.cjs');
+  t.mock.method(fs,'copyFileSync',(from,to,...args)=>{
+    if(from===sdk) fs.appendFileSync(from,'\n// changed during preparation');
+    return copy(from,to,...args);
+  });
+  await assert.rejects(prepare(f),/Copied SDK checksum mismatch/);
+  assert.equal(fs.existsSync(f.out),false);
 });
 
 test('source previews and incomplete runtime evidence cannot become a package', async t => {

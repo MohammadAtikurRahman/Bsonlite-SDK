@@ -52,7 +52,10 @@ npm pack
 
 Script SDK, engine, matching modified source এবং তিন ধরনের runtime report-এর
 checksum যাচাই করে। বানানো package-এ matching source, component licenses,
-validation record ও checksum থাকে। CommonJS ও ES-module import পরীক্ষা করা
+validation record, মূল তিনটি JUnit report এবং checksum থাকে। Report-গুলো
+`validation/` folder-এ থাকে; GitHub artifact expire হলেও package থেকে পাওয়া
+যাবে। Copy হওয়া SDK, source ও report-এর bytes-ও validation record-এর সঙ্গে
+মিলিয়ে দেখা হয়। CommonJS ও ES-module import পরীক্ষা করা
 হয়। নতুন CJS-এ Console adapter আগে থেকেই আছে, তাই পুরোনো adapter দিয়ে আবার
 wrap করা হয় না। User-এর computer-এ engine download করার postinstall script
 নেই।
