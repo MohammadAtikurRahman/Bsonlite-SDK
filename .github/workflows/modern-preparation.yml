@@ -1,0 +1,21 @@
+name: Modern npm preparation checks
+on:
+  push:
+    branches: [upgrade/mongodb-9.0]
+  pull_request:
+    paths: ['scripts/prepare-modern.cjs', 'test/modern-preparation.test.cjs', '.github/workflows/modern-preparation.yml']
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with: {node-version: '24', package-manager-cache: false}
+      - run: npm test
+      - run: npm run test:modern-preparation
+# The core modern workflow prepares and tests the real npm tarball only after
+# its Windows native, migration/CLI and final embedded-engine gates succeed.

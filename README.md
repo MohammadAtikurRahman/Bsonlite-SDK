@@ -14,6 +14,13 @@ Add BsonLite to your project, connect once and work with documents through colle
 
 This release is **npm SDK 0.6.0-rc.3**, with automatic connections for **BsonLite Console 0.2.0** and its terminal CLI. It preserves the tested **SDK 0.6.0-rc.1** native core and database format. Automatic discovery requires this npm release or the integrated standalone SDK download. See [validation results](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/TEST_RESULTS.md) for test coverage.
 
+The experimental modern-engine work uses MongoDB Community 9.0.4, driver 7.7.0
+and a separately prepared `0.7.0` prerelease under the `next` tag. Its npm
+preparation requires the core workflow's actual Windows storage, migration/CLI
+and final bundled-SDK evidence. See [modern preparation instructions](MODERN_ENGINE_BN.md)
+and the [core upgrade branch](https://github.com/MohammadAtikurRahman/BsonLite/tree/upgrade/mongodb-9.0).
+Preparing or pushing source does not publish a version to npm.
+
 ## Installation
 
 ```sh

@@ -4,3 +4,5 @@ node_modules/
 .env
 BsonLiteConsoleDemo/
 Database/
+prepared-modern/
+.bsonlite-modern-package-*/
