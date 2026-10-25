@@ -1,5 +1,30 @@
 # BsonLite validation
 
+## Experimental npm SDK 0.7.0-alpha.0
+
+The prepared modern package passed its actual core Windows engine gates on
+**2026-10-25**, at core commit `5137fbc92749f20679445657d504718446db4eab`:
+[run 40181496708](https://github.com/MohammadAtikurRahman/BsonLite/actions/runs/40181496708).
+The required source/native, runtime/migration/CLI and final embedded suites
+passed 7, 3 and 9 cases respectively, without any required skip or failure.
+These groups overlap. Migration covers 141 typed BSON records, validators,
+indexes, a view and the preserved original store; runtime coverage includes
+TLS/authentication, credential rotation and journaled data after forced engine
+termination. See the [complete core evidence](https://github.com/MohammadAtikurRahman/BsonLite/blob/main/TEST_RESULTS.md).
+
+The workflow used this repository's pinned preparation script to pack the
+actual `bsonlite-sdk-0.7.0-alpha.0.tgz`, install it in an isolated Windows
+consumer, and verify checksums, capabilities and inert CJS/ESM exports.
+[npm artifact](https://github.com/MohammadAtikurRahman/BsonLite/actions/runs/40181496708/artifacts/12594269894).
+Tarball SHA-256: `67d24c400aa21ffb4419ec97c53d77c03708090fd1e1f71386612737cb2a5cd5`.
+
+After download, the ZIP/tarball, SDK, modified engine source and raw JUnit
+report hashes were independently matched to the successful native artifact;
+the extracted package's verifier also passed locally. Original reports ship
+under `validation/`. The package targets `next`; it has not been published by
+the workflow. It remains experimental, with clean desktop/installer tests and
+independent security review outstanding. [বাংলা install/publish guide](MODERN_ENGINE_BN.md).
+
 ## npm SDK 0.6.0-rc.3 with Console 0.2.0
 
 The current package passed another real Windows packed-package/CLI check on

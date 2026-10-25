@@ -1,9 +1,22 @@
 # আধুনিক engine-এর npm package প্রস্তুত করা
 
-`upgrade/mongodb-9.0`-এ BsonLite-এর নতুন experimental engine-এর জন্য প্রস্তুতি
-আছে। Engine 9.0.4, driver 7.7.0; আধুনিক build-এর জন্য Node.js 20.19+ এবং
-Windows x64 build 20348+ প্রয়োজন। এই repository-র বিদ্যমান 0.6 package-কে
-শুধু version বদলে আধুনিক package বানানো যাবে না।
+নতুন experimental SDK **0.7.0-alpha.0**-এর আসল Windows engine, migration/CLI
+ও final single-file SDK পরীক্ষা পাস করেছে। Engine 9.0.4, driver 7.7.0;
+Node.js 20.19+ এবং Windows x64 build 20348+ প্রয়োজন। এই repository-র `main`-এ
+preparation script আছে; root-এর 0.6 package-এর শুধু version বদলে নতুন engine
+পাওয়া যাবে না।
+
+পরীক্ষায় পাস করা build:
+
+- Core commit: `5137fbc92749f20679445657d504718446db4eab`।
+- [সফল Windows run](https://github.com/MohammadAtikurRahman/BsonLite/actions/runs/40181496708)।
+- [প্রস্তুত npm package ZIP](https://github.com/MohammadAtikurRahman/BsonLite/actions/runs/40181496708/artifacts/12594269894)।
+- [Standalone CJS ও matching source ZIP](https://github.com/MohammadAtikurRahman/BsonLite/actions/runs/40181496708/artifacts/12594725727)।
+
+npm package ZIP extract করলে `bsonlite-sdk-0.7.0-alpha.0.tgz` পাবেন। এর
+SHA-256: `67d24c400aa21ffb4419ec97c53d77c03708090fd1e1f71386612737cb2a5cd5`।
+PowerShell-এ `Get-FileHash ./bsonlite-sdk-0.7.0-alpha.0.tgz -Algorithm SHA256`
+দিয়ে মিলিয়ে নিতে পারেন।
 
 Core workflow বাস্তব Windows engine, encrypted storage, journal/spill,
 backup/restore, পুরোনো SDK থেকে migration, CLI এবং final single-file SDK
@@ -11,10 +24,26 @@ backup/restore, পুরোনো SDK থেকে migration, CLI এবং fin
 তৈরি ও verify/pack করা হয়। [Core build ও artifacts](https://github.com/MohammadAtikurRahman/BsonLite/actions/workflows/modern-engine.yml)
 দেখুন। Source preview দিয়ে npm release তৈরি করা বন্ধ থাকে।
 
+## Publish করার আগে নিজের নতুন project-এ পরীক্ষা
+
+উপরের tarball-এর পাশে একটি নতুন project folder ব্যবহার করুন:
+
+```powershell
+mkdir bsonlite-modern-try
+cd bsonlite-modern-try
+npm init -y
+npm install ../bsonlite-sdk-0.7.0-alpha.0.tgz
+```
+
+সেই project থেকে `require('bsonlite-sdk')` ব্যবহার করা যাবে। নতুন database-এ
+আগের মতো `await BsonLite.connect()` করুন। চলমান app-টি Console/CLI-তে
+automatic connection হিসেবে দেখা যাবে। পুরোনো `Database` folder-এর জন্য
+নিচের migration guide অনুসরণ করুন।
+
 ## পরীক্ষিত npm artifact থেকে publish
 
-সফল core run-এর `BsonLite-modern-npm-<commit>` artifact নিন। ZIP-এর ভেতরে
-প্রস্তুত `bsonlite-sdk-0.7.0-alpha.0.tgz` থাকবে। সেটি extract করুন:
+ডাউনলোড করা tarball আলাদা একটি publish folder-এ রাখুন। সেটি extract করে
+প্রস্তুত `package` folder থেকে চালান:
 
 ```powershell
 tar -xzf ./bsonlite-sdk-0.7.0-alpha.0.tgz
@@ -27,6 +56,13 @@ npm stage publish --access public --tag next
 বর্তমান npm CLI-তে staged publishing ও আপনার browser/2FA authentication
 প্রয়োজন। Review শেষ হলে নিজের নতুন stage ID দিয়ে approve করুন। এখানে
 experimental release-এর tag `next`; সাধারণ `latest` package থেকে এটি আলাদা।
+নিজের নতুন stage ID দেখার ও review শেষে approve করার command:
+
+```powershell
+npm stage list bsonlite-sdk
+npm stage approve YOUR_NEW_STAGE_ID
+```
+
 আগে publish হওয়া একই version আবার publish করা যাবে না। নতুন npm version
 লাগলে preparation script-এর `--version` ব্যবহার করে package পুনরায় প্রস্তুত
 করতে হবে; প্রস্তুত package-এর checksum ভেঙে শুধু package.json বদলাবেন না।
@@ -40,14 +76,14 @@ experimental release-এর tag `next`; সাধারণ `latest` package থ�
 run-এর সঠিক commit SHA ও run ID দিয়ে:
 
 ```powershell
-node scripts/prepare-modern.cjs --artifact F:/BsonLiteModern --out ./prepared-modern --commit CORE_COMMIT_SHA --run-id CORE_RUN_ID
+node scripts/prepare-modern.cjs --artifact F:/BsonLiteModern --out ./prepared-modern --commit 5137fbc92749f20679445657d504718446db4eab --run-id 40181496708
 cd prepared-modern
 npm test
 npm pack
 ```
 
-`CORE_COMMIT_SHA` ও `CORE_RUN_ID` সফল core run থেকে নিতে হবে। Output folder
-আগে থেকে থাকা চলবে না। অন্য version চাইলে `--version 0.7.0-alpha.1` দিতে
+অন্য সফল run-এর artifact নিলে তার নিজের commit SHA ও run ID দিন। Output
+folder আগে থেকে থাকা চলবে না। অন্য version চাইলে `--version 0.7.0-alpha.1` দিতে
 পারেন, তবে সেটি আগে npm-এ publish হওয়া চলবে না।
 
 Script SDK, engine, matching modified source এবং তিন ধরনের runtime report-এর
