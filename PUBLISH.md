@@ -1,104 +1,127 @@
-# Publish from your local BsonLite checkout
+# Publish BsonLite from your local checkout
 
-The current pinned snapshot, 0.7.0-alpha.0, is already published under `next`. npm versions cannot be reused. These commands describe that release flow; prepare a newly validated snapshot with a unique version before another publish.
+## Current release: 0.7.0-alpha.1 (documentation only)
 
-The current release snapshot is **bsonlite-sdk@0.7.0-alpha.0**, containing engine 9.0.4 and driver 7.7.0. It is the exact tarball prepared, installed and verified by successful [core Windows run 40207704023](https://github.com/MohammadAtikurRahman/BsonLite/actions/runs/40207704023).
+This release includes the complete canonical README. SDK, engine, matching source,
+licenses and Windows runtime reports remain byte-identical to the published
+0.7.0-alpha.0 package. The embedded SDK still reports 0.7.0-alpha.0; only the npm
+package version and documentation/integrity metadata change. No new native
+runtime validation is claimed.
 
-## README policy: one guide for GitHub and npm
+The original `release/snapshot.json` and `release/packed/` remain intact as the
+checksum-pinned baseline. `release/documentation.json` pins the new package version,
+the baseline archive digest and the reviewed README digest. The local release
+helper verifies the baseline, prepares the documentation release and verifies the
+actual packed files before staging. It rejects unreviewed README changes and
+modified cached archives. No full engine rebuild or manual artifact download is
+needed for this documentation-only release.
 
-`README.md` is the canonical user-facing guide. `scripts/prepare-modern.cjs`
-copies its exact bytes into each newly prepared modern package before computing
-checksums. Do not replace it with generated release notes or a shortened template.
-Keep the guide unchanged when a release introduces no relevant new information.
-Update it when features, requirements, behavior or documentation need correction;
-record release-specific changes separately in the changelog and validation files.
+## 1. Update and verify
 
-`npm run test:modern-preparation` checks that the prepared directory and actual
-`npm pack` archive preserve the full README, that a later package version keeps
-the same guide, and that altering the packed README fails integrity verification.
-
-### Already-published 0.7.0-alpha.0
-
-The frozen `release/snapshot.json` and `release/packed/` still identify the
-original, published tarball, including its old short README. Updating GitHub or
-running `release:verify` does not rewrite that archive. Do not stage it again to
-try to update npm documentation. Its version cannot be republished or reused,
-even after unpublishing.
-
-npm requires a new package version to update the displayed README:
-https://docs.npmjs.com/about-package-readme-files/
-
-For a documentation correction, prepare a new unique version (for example
-`0.7.0-alpha.1`) with the canonical README, retain matching engine/source/runtime
-evidence, verify the resulting archive, and refresh the release snapshot before
-using the local stage helper. A documentation-only release must not claim new
-native runtime validation. Do not change the root package version to bypass this
-flow; the root retains the legacy payload.
-
-Before submitting a future snapshot, inspect its actual README:
-
-```powershell
-npm run release:verify
-tar -xOf .release/bsonlite-sdk-NEW_VERSION.tgz package/README.md
-```
-
-Replace `NEW_VERSION` with the verified snapshot version and compare its contents
-with `README.md`. If they differ, fix package preparation before publishing.
-
-## Original snapshot workflow (historical reference)
-
-The following commands describe the already-published snapshot. They become a
-future release workflow only after preparing and pinning a new unique snapshot.
-
-Run these commands inside your existing local bsonlite-sdk repository:
+Run inside your existing local Bsonlite-SDK repository:
 
 ```powershell
 git pull --ff-only origin main
 npm run release:verify
+```
+
+The final verification line must identify **bsonlite-sdk@0.7.0-alpha.1**.
+The root npm script heading can still display 0.6.0-rc.3 because the repository
+retains its separate legacy payload. Do not publish the root directory or bump
+its package.json version.
+
+The preparation uses Node.js, npm and the Windows `tar` command. Node.js 24 is
+the tested maintainer runtime. Staging requires an npm CLI with `npm stage`
+support (11.15+). The existing npm 11.16 CLI supports it.
+
+Optionally inspect the README in the actual publish archive:
+
+```powershell
+tar -xOf .release/bsonlite-sdk-0.7.0-alpha.1.tgz package/README.md
+npm run release:stage -- --dry-run
+```
+
+The dry run prepares/verifies the real tarball and prints the intended staging
+command. It never authenticates or contacts npm publication endpoints.
+
+## 2. Stage
+
+```powershell
 npm login
 npm run release:stage
 npm stage list bsonlite-sdk
 ```
 
-No separate artifact download, C++ compiler, npm install or manual version edit is needed. Node.js 24 is the tested maintainer runtime. Staged publishing needs an npm CLI with `npm stage` support (11.15+). Your existing 11.16 CLI supports these commands.
+The helper stages **0.7.0-alpha.1** with `--access public --tag next`. Complete
+browser/2FA authentication when requested.
 
-`release:verify` reconstructs the original modern tarball from the tracked `release/packed/` files into the ignored `.release/` directory. It checks every part, the complete tarball, package identity/version, native build metadata, actual BsonLite and source hashes, and original Windows runtime report hashes. It never executes the database engine during verification. `release:stage` verifies again and passes that exact tarball to npm under the `next` tag.
+## 3. Review and approve
 
-Use the new stage ID shown by npm:
+Use the actual new stage ID printed by npm:
 
 ```powershell
 npm stage view YOUR_STAGE_ID
 npm stage approve YOUR_STAGE_ID
 ```
 
-Replace `YOUR_STAGE_ID` with the actual ID. If npm still reports `validating`, wait for automated review to finish before approving. Complete browser/2FA authentication when requested. If the intended version is already staged, inspect and approve its existing ID instead of staging the same version again.
+If npm reports `validating`, wait for automated review before approval. If the
+intended version is already staged, review/approve its existing ID rather than
+staging it twice.
 
-After publication:
+## 4. Verify publication and update the main page
 
 ```powershell
 npm view bsonlite-sdk@next version
 ```
 
-Expected: `0.7.0-alpha.0`. Consumers install this experimental release with:
+Expected: `0.7.0-alpha.1`.
+
+To make this documentation update replace the current default on npm's main
+package page and for ordinary installs:
+
+```powershell
+npm dist-tag add bsonlite-sdk@0.7.0-alpha.1 latest
+npm view bsonlite-sdk dist-tags --json
+```
+
+This promotes an alpha release to the default, just as promoting alpha.0 did.
+The `next` tag also remains on alpha.1. Refresh the npm page after propagation.
+Consumers can install the explicit version or use the maintained tag:
 
 ```sh
+npm install bsonlite-sdk@0.7.0-alpha.1
 npm install bsonlite-sdk@next
 ```
 
-The ordinary `latest` tag is unchanged by these commands.
+## README policy: one maintained guide
 
-## Check without submitting anything
+`README.md` is the canonical user-facing guide. `scripts/prepare-modern.cjs`
+copies its exact bytes into each newly prepared modern package before computing
+checksums. Do not replace it with generated release notes or a shortened template.
+Keep it unchanged when a release introduces no relevant information. Edit it for
+new features, changed requirements/behavior or necessary documentation corrections.
+Keep release-specific notes in the changelog and validation files.
+
+The preparation tests check the README in both the prepared directory and actual
+npm tarball, reject alterations, and verify preservation across package versions:
 
 ```powershell
-npm run release:stage -- --dry-run
+npm run test:modern-preparation
+npm run test:release
 ```
 
-The dry run verifies the real local tarball and prints the planned command. It does not invoke npm publication or account authentication.
+Already-published npm versions cannot be reused, even after unpublishing. Updating
+GitHub does not replace an existing version's npm README. See npm's policy:
+https://docs.npmjs.com/about-package-readme-files/
 
-## Repository and release versions
+## Future releases
 
-The repository root retains the checksum-protected 0.6 payload for backwards-compatibility tests. Its npm script header may therefore display 0.6.0-rc.3. The release commands print the actual modern package version and explicitly stage the verified 0.7 tarball; they do not publish the root folder.
+For a future documentation-only correction, review the README, choose a new
+unused prerelease version and explicitly refresh `release/documentation.json`.
+The helper intentionally rejects an unreviewed change to the README digest.
 
-Do not bump the root package.json version to claim a new engine release. For a changed BsonLite, prepare a new unique prerelease using the full core Windows gates and refresh the tracked release snapshot. The original tarball bytes and corresponding source remain intact.
-
-The [advanced preparation guide](MODERN_ENGINE.md) describes generating another validated package. Normal maintainers publishing the current snapshot only need the local commands above.
+For a runtime/engine change, use the full core Windows gates and the advanced
+preparation workflow in [MODERN_ENGINE.md](MODERN_ENGINE.md). Refresh the native
+release snapshot and remove or replace the documentation overlay; it must never
+be silently applied to a different baseline. Retain matching source and runtime
+reports. A documentation patch is not a substitute for validating changed code.

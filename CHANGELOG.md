@@ -1,5 +1,12 @@
 # Changelog
 
+## npm 0.7.0-alpha.1 — documentation only
+
+- Include the complete canonical README used on GitHub in the npm package.
+- Preserve the exact SDK, native engine, source, licenses and runtime evidence from npm 0.7.0-alpha.0. The embedded SDK version remains 0.7.0-alpha.0.
+- Regenerate only package-version and README integrity metadata; no new native runtime validation is claimed.
+- Make local release verification and staging select this reviewed documentation overlay, while retaining the checksum-pinned original snapshot.
+
 ## npm 0.6.0-rc.3
 
 - Automatically connect running SDK apps to BsonLite Console 0.2.0 and its terminal CLI through private local discovery.

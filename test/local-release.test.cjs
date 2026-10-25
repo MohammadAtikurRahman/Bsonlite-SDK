@@ -37,6 +37,12 @@ function fixture(t, options = {}) {
   values['package/package.json'] = Buffer.from(JSON.stringify(pkg));
   values['package/build-info.json'] = Buffer.from(JSON.stringify(build));
   values['package/validation.json'] = Buffer.from(JSON.stringify(validation));
+  if (options.docs) {
+    values['package/README.md'] = Buffer.from('# Original short README\n');
+    const hashes = Object.fromEntries(Object.entries(values).map(([name, bytes]) => [name.slice(8), sha(bytes)]));
+    values['package/scripts/verify-modern.cjs'] = Buffer.from('const expected=' + JSON.stringify(hashes) + ';\n');
+    values['package/SHA256SUMS.txt'] = Buffer.from(Object.entries(values).map(([name, bytes]) => sha(bytes) + '  ' + name.slice(8) + '\n').join(''));
+  }
   const archive = zlib.gzipSync(Buffer.concat([...Object.entries(values).map(([name, data]) => tarFile(name, data)), Buffer.alloc(1024)]));
   const parts = [];
   fs.mkdirSync(path.join(root, 'release/packed'), { recursive: true });
@@ -48,6 +54,14 @@ function fixture(t, options = {}) {
   const snapshot = { format: 1, packageName: 'bsonlite-sdk', version: '0.7.0-alpha.0', engineVersion: '9.0.4', driverVersion: '7.7.0', tag: 'next', coreCommit: 'a'.repeat(40), coreRunId: 42, bytes: archive.length, sha256: sha(archive), parts };
   const save = () => fs.writeFileSync(path.join(root, 'release/snapshot.json'), JSON.stringify(snapshot));
   save();
+  if (options.docs) {
+    const readme = fs.readFileSync(path.resolve(__dirname, '../README.md'));
+    fs.writeFileSync(path.join(root, 'README.md'), readme);
+    fs.writeFileSync(path.join(root, 'release/documentation.json'), JSON.stringify({
+      format: 1, baseVersion: snapshot.version, baseSha256: snapshot.sha256,
+      version: '0.7.0-alpha.1', readmeSha256: sha(readme)
+    }));
+  }
   return { root, snapshot, archive, save };
 }
 
@@ -97,4 +111,45 @@ test('a modified prepared tarball is rejected and left intact', t => {
   const changed = fs.readFileSync(ready.file);
   assert.throws(() => prepareRelease(f.root), /tarball size mismatch/);
   assert.deepEqual(fs.readFileSync(ready.file), changed);
+});
+
+
+test('documentation release preserves SDK, source and reports while staging the new version', t => {
+  const f = fixture(t, { docs: true });
+  const ready = prepareRelease(f.root);
+  assert.equal(ready.version, '0.7.0-alpha.1');
+  assert.equal(ready.documentationOnly, true);
+  assert.equal(path.basename(ready.file), 'bsonlite-sdk-0.7.0-alpha.1.tgz');
+  const extracted = path.join(f.root, 'inspect'); fs.mkdirSync(extracted);
+  const { spawnSync } = require('node:child_process');
+  assert.equal(spawnSync('tar', ['-xzf', ready.file, '-C', extracted]).status, 0);
+  assert.deepEqual(fs.readFileSync(path.join(extracted, 'package/README.md')), fs.readFileSync(path.join(f.root, 'README.md')));
+  assert.equal(fs.readFileSync(path.join(extracted, 'package/BsonLite.cjs'), 'utf8'), 'synthetic SDK fixture');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(extracted, 'package/package.json'))).version, ready.version);
+  const first = fs.readFileSync(ready.file);
+  assert.equal(prepareRelease(f.root).file, ready.file);
+  assert.deepEqual(fs.readFileSync(ready.file), first);
+  t.mock.method(console, 'log', () => {});
+  assert.equal(main(['stage', '--dry-run'], f.root), 0);
+  fs.appendFileSync(ready.file, 'tampered');
+  assert.throws(() => prepareRelease(f.root), /Cached documentation archive changed/);
+});
+
+test('documentation releases reject unreviewed README edits and wrong base archives', t => {
+  const f = fixture(t, { docs: true });
+  fs.appendFileSync(path.join(f.root, 'README.md'), '\nchanged');
+  assert.throws(() => prepareRelease(f.root), /README changed/);
+  const manifest = path.join(f.root, 'release/documentation.json');
+  const value = JSON.parse(fs.readFileSync(manifest));
+  value.baseSha256 = '0'.repeat(64); fs.writeFileSync(manifest, JSON.stringify(value));
+  assert.throws(() => prepareRelease(f.root), /different base archive/);
+});
+
+
+test('Windows Git CRLF README checkouts retain the reviewed canonical release bytes', t => {
+  const f = fixture(t, { docs: true });
+  const original = fs.readFileSync(path.join(f.root, 'README.md'), 'utf8');
+  fs.writeFileSync(path.join(f.root, 'README.md'), original.replace(/\n/g, '\r\n'));
+  const ready = prepareRelease(f.root);
+  assert.equal(ready.version, '0.7.0-alpha.1');
 });

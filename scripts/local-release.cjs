@@ -134,7 +134,14 @@ function prepareRelease(root) {
   const snapshot = loadSnapshot(root);
   const file = assemble(root, snapshot);
   const release = verifyTarball(file, snapshot);
-  return { ...release, tag: snapshot.tag };
+  const base = { ...release, tag: snapshot.tag };
+  const { prepareDocumentationRelease } = require('./documentation-release.cjs');
+  const ready = prepareDocumentationRelease(root, base, snapshot);
+  if (ready.documentationOnly) {
+    const bytes = fs.readFileSync(ready.file);
+    verifyTarball(ready.file, { ...snapshot, version: ready.version, bytes: bytes.length, sha256: sha256(bytes) });
+  }
+  return ready;
 }
 function stageArguments(file) {
   return ['stage', 'publish', path.resolve(file), '--access', 'public', '--tag', 'next'];
