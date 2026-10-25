@@ -36,6 +36,8 @@ function fixture(t) {
 
 test('a prepared fixture preserves matching source, next tag and inert CJS/ESM exports', async t => {
   const f = fixture(t); await prepare(f);
+  const canonicalReadme = fs.readFileSync(path.resolve(__dirname, '../README.md'));
+  assert.deepEqual(fs.readFileSync(path.join(f.out, 'README.md')), canonicalReadme);
   const pkg = JSON.parse(fs.readFileSync(path.join(f.out,'package.json')));
   assert.equal(pkg.publishConfig.tag,'next'); assert.equal(pkg.engines.node,'>=20.19.0');
   assert.equal(pkg.scripts.install,undefined); assert.equal(pkg.scripts.postinstall,undefined);
@@ -53,6 +55,13 @@ test('a prepared fixture preserves matching source, next tag and inert CJS/ESM e
   assert.equal(extract.status,0,extract.stderr);
   const packedCheck = spawnSync(process.execPath,['scripts/verify-modern.cjs'],{cwd:path.join(unpacked,'package'),encoding:'utf8'});
   assert.equal(packedCheck.status,0,packedCheck.stderr);
+  const packedReadme = path.join(unpacked, 'package/README.md');
+  assert.deepEqual(fs.readFileSync(packedReadme), canonicalReadme, 'npm tarball must retain the complete canonical README');
+  fs.appendFileSync(packedReadme, '\nchanged');
+  const damagedReadme = spawnSync(process.execPath, ['scripts/verify-modern.cjs'], { cwd: path.join(unpacked, 'package'), encoding: 'utf8' });
+  assert.equal(damagedReadme.status, 1);
+  assert.match(damagedReadme.stderr, /README\.md checksum mismatch/);
+  fs.writeFileSync(packedReadme, canonicalReadme);
   fs.appendFileSync(path.join(unpacked,'package/validation/runtime.xml'),'\nchanged');
   const damagedReport = spawnSync(process.execPath,['scripts/verify-modern.cjs'],{cwd:path.join(unpacked,'package'),encoding:'utf8'});
   assert.equal(damagedReport.status,1);assert.match(damagedReport.stderr,/validation\/runtime\.xml checksum mismatch/);
@@ -91,4 +100,11 @@ test('existing outputs and a latest/stable version are refused without overwriti
   await assert.rejects(prepare(f),/new output folder/);
   assert.equal(fs.readFileSync(path.join(f.out,'keep'),'utf8'),'preserve');
   await assert.rejects(prepare({...f,version:'0.7.0'}),/prerelease/);
+});
+
+test('a later package version preserves the same complete README', async t => {
+  const f = fixture(t);
+  await prepare({ ...f, version: '0.7.0-alpha.1' });
+  assert.equal(JSON.parse(fs.readFileSync(path.join(f.out, 'package.json'))).version, '0.7.0-alpha.1');
+  assert.deepEqual(fs.readFileSync(path.join(f.out, 'README.md')), fs.readFileSync(path.resolve(__dirname, '../README.md')));
 });
