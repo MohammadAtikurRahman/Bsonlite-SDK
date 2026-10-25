@@ -1,6 +1,38 @@
 # BsonLite validation
 
-## Experimental npm SDK 0.7.0-alpha.0
+## Current local release snapshot: 0.7.0-alpha.0
+
+The local publishing tools passed on Windows Server 2022 and Ubuntu 24.04,
+Node.js 24, in SDK commit `5d418954f677e3f9b624575be37006a4d0fc88fb`:
+[run 40213330000](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/actions/runs/40213330000).
+Each platform passed the two retained distribution tests, five modern
+preparation cases and eight local-release cases, then reconstructed and
+verified the actual modern tarball and exercised the staging dry run.
+
+The exact release tarball is the one prepared, packed, installed and verified
+by [core Windows run 40207704023](https://github.com/MohammadAtikurRahman/BsonLite/actions/runs/40207704023),
+core commit `69920051901246994896c1bc53cc5f32bacaabd3`. That core run passed
+all required native/source (7), runtime/migration/CLI (3) and final embedded
+consumer (9) cases, with overlapping coverage. The current tarball SHA-256 is
+`ae05f04312efc318948b6cf8a517063225ce751349b43a4a5bf1e7e6ec7233cf`.
+
+The archive is stored as 38 binary Git parts. Verification checks every part,
+the complete archive, npm identity/version/tag, native build metadata,
+actual SDK and matching-source digests, and the original runtime report
+digests. A source preview, a corrupt/missing part, an escaping part path or
+a modified prepared archive is rejected. Staging arguments target this exact
+0.7 tarball, independently of the retained 0.6 repository-root fixture.
+
+No package was staged or published by CI or these implementation checks.
+The dry run deliberately stops before npm authentication or registry writes;
+the owner runs `npm run release:stage` and approves the resulting stage ID.
+See [local publishing commands](PUBLISH.md). No runtime SDK bytes, engine,
+Console adapter or previous 0.6 distribution were modified.
+
+## Earlier experimental npm SDK 0.7.0-alpha.0 evidence
+
+The following records describe an earlier preparation of the still-unpublished
+prerelease. The local release commands use the current snapshot identified above.
 
 The prepared modern package passed its actual core Windows engine gates on
 **2026-10-25**, at core commit `5137fbc92749f20679445657d504718446db4eab`:
