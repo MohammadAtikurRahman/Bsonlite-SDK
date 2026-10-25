@@ -326,6 +326,12 @@ is retained as historical release guidance.
 
 Tests and packing preserve the validated SDK bytes. Existing Windows Git checkouts with CRLF conversion are repaired only when LF normalization exactly matches the recorded checksum. Other source changes are refused and left intact. The Windows workflow installs the actual packed SDK in an isolated project and checks its native engine with the pinned Console/CLI source. See `TEST_RESULTS.md`.
 
+The CLI test fixture is pinned to core commit `696be4a7d3fc9e5105ab0bee1352b2e72ebb4f06`.
+It preserves the Console 0.2.0 CLI and connection/query files with their license
+and verified source hashes, so CI does not need access to a separate private
+Console repository. The package's engine and SDK payload are unchanged by this
+workflow configuration.
+
 ## Contribute
 
 - [BsonLite](https://github.com/MohammadAtikurRahman/BsonLite): core SDK and engine integration.
