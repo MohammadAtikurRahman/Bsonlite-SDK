@@ -1,8 +1,10 @@
-# Publish from your local SDK checkout
+# Publish from your local BsonLite checkout
+
+The current pinned snapshot, 0.7.0-alpha.0, is already published under `next`. npm versions cannot be reused. These commands describe that release flow; prepare a newly validated snapshot with a unique version before another publish.
 
 The current release snapshot is **bsonlite-sdk@0.7.0-alpha.0**, containing engine 9.0.4 and driver 7.7.0. It is the exact tarball prepared, installed and verified by successful [core Windows run 40207704023](https://github.com/MohammadAtikurRahman/BsonLite/actions/runs/40207704023).
 
-Run these commands inside your existing local Bsonlite-SDK repository:
+Run these commands inside your existing local bsonlite-sdk repository:
 
 ```powershell
 git pull --ff-only origin main
@@ -14,7 +16,7 @@ npm stage list bsonlite-sdk
 
 No separate artifact download, C++ compiler, npm install or manual version edit is needed. Node.js 24 is the tested maintainer runtime. Staged publishing needs an npm CLI with `npm stage` support (11.15+). Your existing 11.16 CLI supports these commands.
 
-`release:verify` reconstructs the original modern tarball from the tracked `release/packed/` files into the ignored `.release/` directory. It checks every part, the complete tarball, package identity/version, native build metadata, actual SDK and source hashes, and original Windows runtime report hashes. It never executes the database engine during verification. `release:stage` verifies again and passes that exact tarball to npm under the `next` tag.
+`release:verify` reconstructs the original modern tarball from the tracked `release/packed/` files into the ignored `.release/` directory. It checks every part, the complete tarball, package identity/version, native build metadata, actual BsonLite and source hashes, and original Windows runtime report hashes. It never executes the database engine during verification. `release:stage` verifies again and passes that exact tarball to npm under the `next` tag.
 
 Use the new stage ID shown by npm:
 
@@ -51,6 +53,6 @@ The dry run verifies the real local tarball and prints the planned command. It d
 
 The repository root retains the checksum-protected 0.6 payload for backwards-compatibility tests. Its npm script header may therefore display 0.6.0-rc.3. The release commands print the actual modern package version and explicitly stage the verified 0.7 tarball; they do not publish the root folder.
 
-Do not bump the root package.json version to claim a new engine release. For a changed SDK, prepare a new unique prerelease using the full core Windows gates and refresh the tracked release snapshot. The original tarball bytes and corresponding source remain intact.
+Do not bump the root package.json version to claim a new engine release. For a changed BsonLite, prepare a new unique prerelease using the full core Windows gates and refresh the tracked release snapshot. The original tarball bytes and corresponding source remain intact.
 
 The [advanced preparation guide](MODERN_ENGINE.md) describes generating another validated package. Normal maintainers publishing the current snapshot only need the local commands above.
