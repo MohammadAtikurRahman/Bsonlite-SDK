@@ -48,14 +48,16 @@
     "source/",
     "SECURITY.md",
     "TEST_RESULTS.md",
-    "START_HERE_BN.md",
+    "START_HERE.md",
     "scripts/verify-package.cjs",
     "CHANGELOG.md",
     "index.cjs",
     "auto-console.cjs",
-    "CONSOLE_BN.md",
+    "CONSOLE.md",
     "console-build.json",
-    "examples/"
+    "examples/",
+    "MODERN_ENGINE.md",
+    "PUBLISH.md"
   ],
   "scripts": {
     "pretest": "node scripts/verify-package.cjs --normalize",

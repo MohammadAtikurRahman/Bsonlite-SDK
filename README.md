@@ -22,8 +22,8 @@ includes matching modified engine source and the original test reports, and
 was packed, installed and checksum/import verified on Windows. It is prepared
 for the `next` tag; publishing to npm is a separate maintainer action.
 It requires Node.js 20.19+ and Windows x64 build 20348+.
-See the [বাংলা download/install/publish guide](MODERN_ENGINE_BN.md) and
-[migration instructions](https://github.com/MohammadAtikurRahman/BsonLite/blob/main/native/modern/UPGRADE_BN.md)
+See the [download/install/publish guide](MODERN_ENGINE.md) and
+[migration instructions](https://github.com/MohammadAtikurRahman/BsonLite/blob/main/native/modern/UPGRADE.md)
 before opening an existing database. The package in this repository root is
 the 0.6 distribution; use the separately prepared 0.7 tarball for the new engine.
 
@@ -51,7 +51,7 @@ For npm, keep `require('bsonlite-sdk')` or `import BsonLite from 'bsonlite-sdk'`
 
 Importing the SDK does not start a database; its local Console connection starts only after connecting. `BsonLite.stop()` and `database.close()` remove their local sessions. Closing the viewer leaves the app running.
 
-Records live in a private current-account application-data directory and contain a fresh per-connection loopback token, not native engine credentials/private keys. The viewer starts read-only. To disable automatic viewer access, set `BSONLITE_CONSOLE=0` or add `console: false` to your existing connection options. See [বাংলা Console guide](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/CONSOLE_BN.md), `console-build.json` and the Windows compatibility workflow for implementation and validation details.
+Records live in a private current-account application-data directory and contain a fresh per-connection loopback token, not native engine credentials/private keys. The viewer starts read-only. To disable automatic viewer access, set `BSONLITE_CONSOLE=0` or add `console: false` to your existing connection options. See [Console guide](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/CONSOLE.md), `console-build.json` and the Windows compatibility workflow for implementation and validation details.
 
 ## Download the desktop software
 
@@ -303,7 +303,7 @@ Clean Windows Home/Pro PCs, packaged Electron applications and independent secur
 | Recovery | [Backup and restore](https://bsonlite.com/docs/backup-restore.html) |
 | Compatibility | [Supported features and limits](https://bsonlite.com/docs/compatibility.html) |
 | Desktop software & CLI | [Console and connection guide](https://bsonlite.com/console.html) |
-| বাংলা Console guide | [npm SDK-এর সঙ্গে Console ব্যবহার](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/CONSOLE_BN.md) |
+| Console guide | [Use Console with the npm SDK](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/CONSOLE.md) |
 
 ## Licenses and matching source
 
@@ -324,10 +324,10 @@ npm run verify
 ```
 
 Version `0.6.0-rc.3` is already published and must not be uploaded again. For
-the modern engine, follow [modern npm preparation](MODERN_ENGINE_BN.md): use
+the modern engine, follow [modern npm preparation](MODERN_ENGINE.md): use
 the successful core artifact, prepare a new `0.7.0` prerelease, verify it and
 publish under `next` with your npm authentication. Renaming this legacy
-checkout does not upgrade its engine. The [0.6 publishing guide](PUBLISH_BN.md)
+checkout does not upgrade its engine. The [0.6 publishing guide](PUBLISH.md)
 is retained as historical release guidance.
 
 Tests and packing preserve the validated SDK bytes. Existing Windows Git checkouts with CRLF conversion are repaired only when LF normalization exactly matches the recorded checksum. Other source changes are refused and left intact. The Windows workflow installs the actual packed SDK in an isolated project and checks its native engine with the pinned Console/CLI source. See `TEST_RESULTS.md`.

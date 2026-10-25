@@ -1,7 +1,7 @@
 name: Modern npm preparation checks
 on:
   push:
-    branches: [upgrade/mongodb-9.0]
+    branches: [main, upgrade/mongodb-9.0]
   pull_request:
     paths: ['scripts/prepare-modern.cjs', 'test/modern-preparation.test.cjs', '.github/workflows/modern-preparation.yml']
 permissions:

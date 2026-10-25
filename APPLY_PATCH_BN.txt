@@ -1,1 +1,0 @@
-ZIP-এর files/folders তোমার npm project-এর package.json যে folder-এ আছে সেখানে copy করে পুরোনো files replace করো। তারপর npm test এবং npm publish --access public --tag latest চালাও। আগের bsonlite-0.6.0-rc.1.tgz publish করবে না: সেটিতে পুরোনো নাম আছে। নতুন version দরকার নেই কারণ আগের publish সফল হয়নি।

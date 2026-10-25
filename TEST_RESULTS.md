@@ -23,7 +23,7 @@ report hashes were independently matched to the successful native artifact;
 the extracted package's verifier also passed locally. Original reports ship
 under `validation/`. The package targets `next`; it has not been published by
 the workflow. It remains experimental, with clean desktop/installer tests and
-independent security review outstanding. [বাংলা install/publish guide](MODERN_ENGINE_BN.md).
+independent security review outstanding. [installation and publishing guide](MODERN_ENGINE.md).
 
 ## npm SDK 0.6.0-rc.3 with Console 0.2.0
 
