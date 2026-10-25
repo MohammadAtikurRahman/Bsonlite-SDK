@@ -1,0 +1,244 @@
+{
+  "format": 1,
+  "packageName": "bsonlite-sdk",
+  "version": "0.7.0-alpha.0",
+  "engineVersion": "9.0.4",
+  "driverVersion": "7.7.0",
+  "tag": "next",
+  "coreCommit": "69920051901246994896c1bc53cc5f32bacaabd3",
+  "coreRunId": 40207704023,
+  "artifactId": 12604842008,
+  "artifactSha256": "42bfc189b106220ea2f4140a28df313756939e503d45779ee0d1e3d099e7c00e",
+  "bytes": 156571572,
+  "sha256": "ae05f04312efc318948b6cf8a517063225ce751349b43a4a5bf1e7e6ec7233cf",
+  "parts": [
+    {
+      "path": "release/packed/npm-0001.part",
+      "bytes": 4194304,
+      "sha256": "014e3dfc939ea462847f11677bfa4014b19461128e89ea0625e0117a2faf7b70",
+      "gitSha1": "ebdf23fddb1e983c8ce1543910333369787825f2"
+    },
+    {
+      "path": "release/packed/npm-0002.part",
+      "bytes": 4194304,
+      "sha256": "c17b469151e739c98445f459ddfa19d62480f60d4a167474389d91ef907ce0a2",
+      "gitSha1": "8c47dcb5528a758b3e8b09de820ddf4a70eb40b0"
+    },
+    {
+      "path": "release/packed/npm-0003.part",
+      "bytes": 4194304,
+      "sha256": "188c4e5fb66788c2905a24a263ade86a2fa0cd18a8ab31f44425494a0528ff54",
+      "gitSha1": "49f27cf040435ed2fa858fc955209b306c67ea46"
+    },
+    {
+      "path": "release/packed/npm-0004.part",
+      "bytes": 4194304,
+      "sha256": "386b28be535bd86ab84e56c933f84bafa7533a6d4b8e0ba65e264c9ad69f5582",
+      "gitSha1": "0c257ef1c813bba3bc73bf3c7a12bd588b9c4e1d"
+    },
+    {
+      "path": "release/packed/npm-0005.part",
+      "bytes": 4194304,
+      "sha256": "10e829ed75f3c7a9effe2d03b2f404212ec5be7deb74ffbbac0531ac1cd6dc90",
+      "gitSha1": "a38aca4cadbf20178bc08d57392e897173352e8b"
+    },
+    {
+      "path": "release/packed/npm-0006.part",
+      "bytes": 4194304,
+      "sha256": "c3740316e02e93ab7a4ce5b3eb2c1a3ab84b03e42f4b000358a2195bc8bea695",
+      "gitSha1": "83904f21635214991ca8739799f050948232d5f5"
+    },
+    {
+      "path": "release/packed/npm-0007.part",
+      "bytes": 4194304,
+      "sha256": "2ffd3ccab4bbe81f756befb2f30d89ed40b1cca8fc9cbadb06c88d21c4246cb8",
+      "gitSha1": "62f36f3bc342146aee49db9c8064beee9a3a8ec1"
+    },
+    {
+      "path": "release/packed/npm-0008.part",
+      "bytes": 4194304,
+      "sha256": "9e95fcd606aa2768d5fb54599adeecc47f98588deb3301dc8644efe2516d45a0",
+      "gitSha1": "44b508afdeb7ce69ab2712bef4d03ebd16e2bfa5"
+    },
+    {
+      "path": "release/packed/npm-0009.part",
+      "bytes": 4194304,
+      "sha256": "036d60df61d33bcabba8016da135a1ef5490e7df6722105b94ca1be59aeba9cf",
+      "gitSha1": "1fae5bed426d752930021db6fe832cac361c5f03"
+    },
+    {
+      "path": "release/packed/npm-0010.part",
+      "bytes": 4194304,
+      "sha256": "be2e04a7107d2193308678fa979ed0b2418e71602b02367b8b108ba745924f1b",
+      "gitSha1": "f18289e7e1680cdf0d5ee20afa7199019f4d2aca"
+    },
+    {
+      "path": "release/packed/npm-0011.part",
+      "bytes": 4194304,
+      "sha256": "72da57a0e80392f9106a14450b92d88c06642daeef3fec251e92bbebb97424d6",
+      "gitSha1": "500caf5efcca062cba00ea525ab1051be26c87fc"
+    },
+    {
+      "path": "release/packed/npm-0012.part",
+      "bytes": 4194304,
+      "sha256": "f2c5ceebbae1a3790084e92a66bf1e3cb8672e9c3a0a9ddd42f11726e69360e0",
+      "gitSha1": "899afa79c3ad15f31a6056bc1d971fbb4098ab19"
+    },
+    {
+      "path": "release/packed/npm-0013.part",
+      "bytes": 4194304,
+      "sha256": "6af6121607b8f96d6b5944cae3ec3b6aea0beb2a456c85f610a141bbd102180c",
+      "gitSha1": "999eccfa1ceccebf1b099b8bd6aacedbb3ccbdce"
+    },
+    {
+      "path": "release/packed/npm-0014.part",
+      "bytes": 4194304,
+      "sha256": "f11268a9b31d18f27a935fb8f94b296bce56883556b8c05a6458cadfb11d0cfe",
+      "gitSha1": "246d49b5d3346e57701a8e862f235556aa60e7ee"
+    },
+    {
+      "path": "release/packed/npm-0015.part",
+      "bytes": 4194304,
+      "sha256": "0b6eacf9d3621649f99023e5de528db8a1a778c2e26f14f7e09ff25edcaa5277",
+      "gitSha1": "011095ab0c3203893f32813000d96e1a27dca51e"
+    },
+    {
+      "path": "release/packed/npm-0016.part",
+      "bytes": 4194304,
+      "sha256": "91400ac0716924ad8a600ea8ddbbf914238b1b870c08df5f2ab0435e988f1ab4",
+      "gitSha1": "052d10576f658952bbe23217b8d6b32ca04bc99a"
+    },
+    {
+      "path": "release/packed/npm-0017.part",
+      "bytes": 4194304,
+      "sha256": "002496112cf24f18939180a09eb0e46ba47eeb40e97dcd9626aa4a03d2eb0c37",
+      "gitSha1": "b886a4ccaa120ae98625ae720d84a704a35f0639"
+    },
+    {
+      "path": "release/packed/npm-0018.part",
+      "bytes": 4194304,
+      "sha256": "568bd7437883da0f8c8e009326a38dec3d17ee18866ecb5d2e7b01824b63268e",
+      "gitSha1": "527d1121adcdec2a7c2cc258c5c6681cf37c37c3"
+    },
+    {
+      "path": "release/packed/npm-0019.part",
+      "bytes": 4194304,
+      "sha256": "9b30a02551695ee0445fe451151555fe1a8ba6ad0cbfbc30a1d2b54f10adb1eb",
+      "gitSha1": "2bed625784357522b52da0e7b34dec6ed149afce"
+    },
+    {
+      "path": "release/packed/npm-0020.part",
+      "bytes": 4194304,
+      "sha256": "c276e3dc2778a98e24ee6306a0d8313cb06f5503c66418412db2f6132e404060",
+      "gitSha1": "a868fd84907213cbfe2596fa623b1dae08506f5e"
+    },
+    {
+      "path": "release/packed/npm-0021.part",
+      "bytes": 4194304,
+      "sha256": "bd6a744fc6e5e7eafc3ea2fd278ede6d46db9dc97852ee33186089dc60cd0be7",
+      "gitSha1": "4fd644485ec14c7dad306e1f7a8d0d77e503a6be"
+    },
+    {
+      "path": "release/packed/npm-0022.part",
+      "bytes": 4194304,
+      "sha256": "05b5f747e964d8c4f09ae09d885d0cbe7b581fa921f150ac061c43542d53eb3c",
+      "gitSha1": "844f40b8c392384cbcfd1e995ef0695722a0b9d7"
+    },
+    {
+      "path": "release/packed/npm-0023.part",
+      "bytes": 4194304,
+      "sha256": "6f6e220b00b9c707105bc4a5398b4ad723b42680eca97e278608550d46db17f3",
+      "gitSha1": "4b1dd23490a8e2093e5a518aecac3e6e709dfc73"
+    },
+    {
+      "path": "release/packed/npm-0024.part",
+      "bytes": 4194304,
+      "sha256": "25a085c8da29c7ce2424b5915da385e7b76e81e6659e58492ccce705757573bf",
+      "gitSha1": "a88686a5aa2d6df6e6dc4195f0585a341c5e9961"
+    },
+    {
+      "path": "release/packed/npm-0025.part",
+      "bytes": 4194304,
+      "sha256": "00358720380d77df5829a4e78f30484919e86c91193b34540808c5f5fc979bfe",
+      "gitSha1": "83d671e2dde34818e5cae4a05b1901430da9a001"
+    },
+    {
+      "path": "release/packed/npm-0026.part",
+      "bytes": 4194304,
+      "sha256": "ebc824dfee4443f803242d13a98959b69d7d57d8d113fee58d9272d2261d810c",
+      "gitSha1": "f141d4b92aeee8aee6491100135070d3ed8ed0ad"
+    },
+    {
+      "path": "release/packed/npm-0027.part",
+      "bytes": 4194304,
+      "sha256": "4f1514290bde4d858b23626d897639d0f05b7b1b0678231ee4f234d2de9afc1d",
+      "gitSha1": "ec99426dcf8846a1160274013380295b464a3d53"
+    },
+    {
+      "path": "release/packed/npm-0028.part",
+      "bytes": 4194304,
+      "sha256": "1dfa9fa7c60fd1a63856572a0e3c431b6a3fdb7b0e362643f572b1416e473339",
+      "gitSha1": "2a93e3bced95ddca2569315ed230f6b54b5ebced"
+    },
+    {
+      "path": "release/packed/npm-0029.part",
+      "bytes": 4194304,
+      "sha256": "d148c8025a92dd7c0fc094ec0e6a531c94bf6fbf3246731fca2a94c481163798",
+      "gitSha1": "18ab2eb4bee155a74a0731ab4605954f78cf6a4b"
+    },
+    {
+      "path": "release/packed/npm-0030.part",
+      "bytes": 4194304,
+      "sha256": "79e6c92671f77ea023b6dffb0b78c105b84e41b81662d7395987e005e11b5dc6",
+      "gitSha1": "86315a3348b83f60c881953f11c72de6bc291c02"
+    },
+    {
+      "path": "release/packed/npm-0031.part",
+      "bytes": 4194304,
+      "sha256": "d83ca861c2f0057ac75bf8406b8bdbdd5e557e55f61075c300f37f3fb48fa4c6",
+      "gitSha1": "67b1b34f35a79ed5fda370415293b49c748d7330"
+    },
+    {
+      "path": "release/packed/npm-0032.part",
+      "bytes": 4194304,
+      "sha256": "fe768ca455eded203c195e02f7d2109e69e86885e1a917da86900fef5454ca1d",
+      "gitSha1": "50520e098e3a29be747573d4228efe61cdb90515"
+    },
+    {
+      "path": "release/packed/npm-0033.part",
+      "bytes": 4194304,
+      "sha256": "30b4b9fddd6c577f62cd8e69a5595ee6ae31be48232fbf93f7d4a29f6c170e10",
+      "gitSha1": "a46bfa8f2be8c6d2872401e240cc890d3c777710"
+    },
+    {
+      "path": "release/packed/npm-0034.part",
+      "bytes": 4194304,
+      "sha256": "a8e1d7dbf0ae2cd258d164995aa66faf41d6fd60e7de139a5947b77bf04e6de5",
+      "gitSha1": "2c37bafff3abd541df81e4b8b8facbf9caad7745"
+    },
+    {
+      "path": "release/packed/npm-0035.part",
+      "bytes": 4194304,
+      "sha256": "da6d7ee6b35353b4a6a32ecd0344cbcfa7512043048588c79f9b5e9b92b15f14",
+      "gitSha1": "3a8d690265f3ee9b46dd86351778c3b39b7b96d5"
+    },
+    {
+      "path": "release/packed/npm-0036.part",
+      "bytes": 4194304,
+      "sha256": "a23fe2184920c6828c03e1bdaf8548148c4e34be7e34d46410ccd7b72db7b9d9",
+      "gitSha1": "42da2d4cad5d865b44b8e2f8bfab528392eb7249"
+    },
+    {
+      "path": "release/packed/npm-0037.part",
+      "bytes": 4194304,
+      "sha256": "409735e70ab0bbe124a0f59aa6509b8511b1c049bf78e87c26faabfa178a0246",
+      "gitSha1": "2363c8e2629c0bad905f398c5eca083ba0d428e9"
+    },
+    {
+      "path": "release/packed/npm-0038.part",
+      "bytes": 1382324,
+      "sha256": "a0abcfc680cd62bfff808c5f729a632ffcf8b37e6810bd92623ba44c57c2c9f6",
+      "gitSha1": "7a757f86e0ced9cb9b931f8f04366e0bb877cd81"
+    }
+  ]
+}

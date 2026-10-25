@@ -2,9 +2,27 @@
 
 **A portable database SDK for Node.js and Windows applications.**
 
+## Publish the modern SDK from this local repository
+
+The local release snapshot is **0.7.0-alpha.0**, with engine **9.0.4** and driver **7.7.0**. In your existing local checkout, run:
+
+```powershell
+git pull --ff-only origin main
+npm run release:verify
+npm login
+npm run release:stage
+npm stage list bsonlite-sdk
+```
+
+When automated review finishes, use the new stage ID with `npm stage approve YOUR_STAGE_ID` and complete browser/2FA authentication. The release script reconstructs and verifies the exact Windows-tested npm tarball from tracked Git parts and stages it under `next`. No separate download is needed. Use Node.js 24 and an npm version supporting staged publishing.
+
+The root retains the published 0.6 payload for compatibility tests; the local release commands explicitly publish the prepared 0.7 tarball. The root npm script header can show 0.6, while the release command prints the actual 0.7 package being staged. See [all local publish/approve commands](PUBLISH.md). Consumers install the modern alpha using `npm install bsonlite-sdk@next`.
+
+## Existing 0.6 distribution
+
 Add BsonLite to your project, connect once and work with documents through collections. BsonLite manages the local database engine, connection settings and encrypted storage.
 
-[Documentation](https://bsonlite.com/docs/index.html) · [Download desktop software](https://github.com/MohammadAtikurRahman/BsonLite-Console/releases/tag/v0.2.0) · [Console & CLI guide](https://bsonlite.com/console.html) · [Discord](https://discord.gg/vSRMRPYqs) · [GitHub](https://github.com/MohammadAtikurRahman/Bsonlite-SDK)
+[Documentation](https://bsonlite.com/docs/index.html) · [Download desktop software](https://bsonlite.com/console.html) · [Console & CLI guide](https://bsonlite.com/console.html) · [Discord](https://discord.gg/vSRMRPYqs) · [GitHub](https://github.com/MohammadAtikurRahman/Bsonlite-SDK)
 
 ## Requirements
 
@@ -55,7 +73,7 @@ Records live in a private current-account application-data directory and contain
 
 ## Download the desktop software
 
-[Download BsonLite Console for Windows x64](https://github.com/MohammadAtikurRahman/BsonLite-Console/releases/download/v0.2.0/BsonLite-Console-0.2.0-Windows-x64.zip).
+[Download BsonLite Console for Windows x64](https://bsonlite.com/console.html).
 
 1. Extract the ZIP and run `BsonLite-Console-0.2.0-Windows-x64.exe`. This portable viewer includes its runtime; it does not need a separate Node.js installation.
 2. Start your app with the updated npm SDK and leave it running under the same Windows account.
@@ -65,7 +83,7 @@ The desktop app includes a collection explorer, document table/JSON views, filte
 
 | Download | Use it for |
 | --- | --- |
-| [Console only](https://github.com/MohammadAtikurRahman/BsonLite-Console/releases/download/v0.2.0/BsonLite-Console-0.2.0-Windows-x64.zip) | Desktop software and CLI tarball for an existing SDK app or server URL. |
+| [Console only](https://bsonlite.com/console.html) | Desktop software and CLI tarball for an existing SDK app or server URL. |
 | [SDK + Console](https://github.com/MohammadAtikurRahman/BsonLite-Console/releases/download/v0.2.0/BsonLite-Easy-Connect-0.2.0.zip) | SDK, software, CLI, offline npm SDK tarball, starter and source. |
 | [Single-file SDK](https://github.com/MohammadAtikurRahman/BsonLite-Console/releases/download/v0.2.0/BsonLite.cjs) | Integrated CJS alternative to the npm SDK. |
 
@@ -313,22 +331,9 @@ This distribution includes the exact matching modified engine source at `source/
 
 ## Maintaining this npm distribution
 
-This repository contains the published 0.6 distribution, package tests and the
-modern npm preparation tools. Verify this checkout with:
+For the current modern release, run `npm run release:verify` and `npm run release:stage` from your local checkout. The exact 0.7 tarball is reconstructed from tracked parts. Follow [local publishing](PUBLISH.md) for approval and [modern npm preparation](MODERN_ENGINE.md) when creating a different validated version.
 
-```powershell
-git pull --ff-only origin main
-npm pkg get name version
-npm test
-npm run verify
-```
-
-Version `0.6.0-rc.3` is already published and must not be uploaded again. For
-the modern engine, follow [modern npm preparation](MODERN_ENGINE.md): use
-the successful core artifact, prepare a new `0.7.0` prerelease, verify it and
-publish under `next` with your npm authentication. Renaming this legacy
-checkout does not upgrade its engine. The [0.6 publishing guide](PUBLISH.md)
-is retained as historical release guidance.
+The root retains the published 0.6 distribution for backwards-compatibility tests. Verify that fixture with `npm test` and `npm run verify`. Do not bump its version to claim a new engine release.
 
 Tests and packing preserve the validated SDK bytes. Existing Windows Git checkouts with CRLF conversion are repaired only when LF normalization exactly matches the recorded checksum. Other source changes are refused and left intact. The Windows workflow installs the actual packed SDK in an isolated project and checks its native engine with the pinned Console/CLI source. See `TEST_RESULTS.md`.
 

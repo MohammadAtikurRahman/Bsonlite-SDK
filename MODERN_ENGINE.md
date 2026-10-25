@@ -1,5 +1,11 @@
 # Prepare and publish the modern SDK
 
+## Publish directly from an existing local checkout
+
+The current validated 0.7.0-alpha.0 tarball is tracked as binary parts in this repository. From your local Bsonlite-SDK folder, run `git pull --ff-only origin main`, `npm run release:verify`, `npm login` and `npm run release:stage`. Inspect the new ID with `npm stage list bsonlite-sdk`, wait for review, then approve using `npm stage approve YOUR_STAGE_ID`. See [the complete local publishing guide](PUBLISH.md). No manual artifact download is needed for this snapshot.
+
+The remaining sections describe advanced manual preparation and testing of other successful core artifacts.
+
 The modern core defaults to SDK 0.7.0-alpha.0, engine 9.0.4 and driver 7.7.0. Its Windows x64 profile requires build 20348+ and Node.js 20.19+. The source and prepared packages remain experimental.
 
 The [core Windows workflow](https://github.com/MohammadAtikurRahman/BsonLite/actions/workflows/modern-engine.yml) builds the custom engine, verifies native storage, migration/CLI and final embedded consumers, then prepares and verifies the npm tarball. Use artifacts from a successful run. The repository root's preserved 0.6 payload is a separate distribution.

@@ -1,14 +1,17 @@
 name: Modern npm preparation checks
 on:
   push:
-    branches: [main, upgrade/mongodb-9.0]
+    branches: [main, upgrade/mongodb-9.0, release/local-npm-publish]
   pull_request:
-    paths: ['scripts/prepare-modern.cjs', 'test/modern-preparation.test.cjs', '.github/workflows/modern-preparation.yml']
+    paths: ['scripts/prepare-modern.cjs', 'scripts/local-release.cjs', 'test/modern-preparation.test.cjs', 'test/local-release.test.cjs', 'release/**', '.github/workflows/modern-preparation.yml']
 permissions:
   contents: read
 jobs:
   source:
-    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -17,5 +20,8 @@ jobs:
         with: {node-version: '24', package-manager-cache: false}
       - run: npm test
       - run: npm run test:modern-preparation
+      - run: npm run test:release
+      - run: npm run release:verify
+      - run: npm run release:stage -- --dry-run
 # The core modern workflow prepares and tests the real npm tarball only after
 # its Windows native, migration/CLI and final embedded-engine gates succeed.

@@ -66,7 +66,10 @@
     "test:console": "node scripts/test-console-windows.cjs",
     "test:modern-preparation": "node --test test/modern-preparation.test.cjs",
     "prepack": "node scripts/verify-package.cjs --normalize",
-    "prepublishOnly": "node scripts/verify-package.cjs --normalize"
+    "prepublishOnly": "node scripts/verify-package.cjs --normalize",
+    "release:verify": "node scripts/local-release.cjs verify",
+    "release:stage": "node scripts/local-release.cjs stage",
+    "test:release": "node --test test/local-release.test.cjs"
   },
   "publishConfig": {
     "access": "public",

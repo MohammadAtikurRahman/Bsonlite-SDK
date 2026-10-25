@@ -6,3 +6,4 @@ BsonLiteConsoleDemo/
 Database/
 prepared-modern/
 .bsonlite-modern-package-*/
+.release/

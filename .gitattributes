@@ -6,3 +6,6 @@ BsonLite.cjs -text
 *.tgz -text
 *.png -text
 *.ico -text
+
+# Preserve the validated local-release tarball parts on Windows too.
+release/packed/*.part binary
