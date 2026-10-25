@@ -2,6 +2,20 @@
 
 ## npm SDK 0.6.0-rc.3 with Console 0.2.0
 
+The current package passed another real Windows packed-package/CLI check on
+**2026-10-25**, at commit `24e83f3fb738d0f6235a14eaa6b64be314da1a9e`:
+[run 40179501476](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/actions/runs/40179501476).
+It verified the original distribution bytes, packed and installed the tarball
+in an isolated consumer, then exercised the embedded 4.0.28 engine, discovery,
+read/write controls, the terminal CLI, BSON Long, CRUD/indexes, session cleanup
+and Console opt-out. The real Console CLI files are pinned to commit
+`d03a5898a976280833653117b9a071d6bd4097ef`, with license and SHA-256 checks,
+through the core repository's compatibility fixture. This check needs no
+private cross-repository credentials. It does not validate the experimental
+9.0.4 engine or a graphical desktop window.
+
+The following record preserves the original release baseline.
+
 The packed npm SDK passed a real native Windows integration run on **2026-10-20**:
 
 - Tested SDK repository commit: `3801124ab3c0a9ebb9cbe1a0c69bc383dc7e2262`.
