@@ -162,7 +162,9 @@ add('profile','accumulator-js',e=>e.col('people').aggregate([{$group:{_id:null,n
 add('topology','change-stream',e=>e.col('people').aggregate([{$changeStream:{}}],{maxTimeMS:2000}).toArray(),{topologyLimit:true});
 add('topology','transaction',async e=>{const session=e.client.startSession();try{session.startTransaction();return await e.col('people').findOne({_id:1},{session});}finally{await session.abortTransaction().catch(()=>{});await session.endSession();}},{topologyLimit:true});
 
+require('./query-compatibility-extra.cjs').extend(cases);
 module.exports = { cases, seed, typeSeed };
+
 if (require.main === module) {
   const counts = cases.reduce((out,t) => { out[t.group]=(out[t.group]||0)+1;return out; },{});
   console.log(JSON.stringify({total:cases.length,counts},null,2));

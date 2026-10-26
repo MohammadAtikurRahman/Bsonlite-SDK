@@ -9,6 +9,7 @@ const assert = require('node:assert/strict');
 const { spawn } = require('node:child_process');
 const { createRequire } = require('node:module');
 const { cases, seed, typeSeed } = require('./query-compatibility-cases.cjs');
+const { generatedSeed } = require('./query-compatibility-extra.cjs');
 const deps = createRequire(path.resolve(process.env.QUERY_RUNTIME || '.query-runtime', 'package.json'));
 const { MongoClient, BSON } = deps('mongodb');
 const sdk = deps('bsonlite-sdk');
@@ -21,7 +22,7 @@ const report = {
   format: 1, started: new Date().toISOString(), run: process.env.GITHUB_RUN_ID ? `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}` : null,
   commit: process.env.GITHUB_SHA || null, platform: process.platform, node: process.version,
   mode: 'published-windows-sdk-vs-community-standalone', results: [],
-  limitations: ['Finite regression matrix, not exhaustive Community feature parity.', 'No cluster, replica-set, Atlas or mongosh parity claim.', 'No performance, power-loss or independent security certification.']
+  limitations: ['Finite regression matrix, not exhaustive Community feature parity.', 'No cluster, replica-set, Atlas or mongosh parity claim.', 'No performance, power-loss or independent security certification.', 'Comparison preserves driver-decoded BSON via canonical EJSON, normalizes object-key order and preserves array order. Server-side $type is checked separately.', 'Random sample/rand and currentDate tests compare validity contracts, not identical random values or timestamps.']
 };
 function digest(file) { return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'); }
 function stable(value) {
@@ -51,10 +52,10 @@ function classify(test, a, b) {
   if (a.ok && b.ok) return JSON.stringify(a.value) === JSON.stringify(b.value) ? 'match' : 'difference';
   if (!a.ok && !b.ok) {
     if (test.expectedError && a.error.code === test.expectedError && b.error.code === test.expectedError) return 'expected-error-match';
-    if (test.topologyLimit && a.error.code === b.error.code) return 'standalone-limit';
+    if (test.topologyLimit && a.error.code === b.error.code && [20,40573].includes(a.error.code)) return 'standalone-limit';
     return 'shared-rejection';
   }
-  if (test.profileLimit && !a.ok && b.ok) return 'profile-limit';
+  if (test.profileLimit && !a.ok && b.ok && [6108304,31264].includes(a.error.code) && /script/i.test(a.error.message)) return 'profile-limit';
   return 'difference';
 }
 function save() {
@@ -91,6 +92,7 @@ async function waitCommunity(uri, child) {
 async function fixture(env) {
   await env.db.collection('people').insertMany(seed(env.BSON));
   await env.db.collection('types').insertMany(typeSeed(env.BSON));
+  await env.db.collection('generated').insertMany(generatedSeed());
   await env.db.collection('departments').insertMany([{ _id: 'dev', lead: 'A', parent: null }, { _id: 'qa', lead: 'C', parent: 'dev' }, { _id: 'ops', lead: 'D', parent: 'dev' }]);
   await env.db.collection('people').createIndex({ age: 1 }, { name: 'age_1' });
 }
