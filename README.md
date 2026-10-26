@@ -6,7 +6,7 @@ Add BsonLite to your application, connect once, and work with BSON documents thr
 
 [Documentation](https://bsonlite.com/docs/) · [Downloads](https://bsonlite.com/download.html) · [BsonLite Console](https://bsonlite.com/docs/console.html) · [Discord](https://discord.gg/vSRMRPYqs) · [Support development](https://buymeacoffee.com/bsonlite)
 
-> The modern 0.7 release line is experimental. This guide describes the API and engine profile introduced in `bsonlite-sdk@0.7.0-alpha.0`. Review the compatibility and migration sections before using existing data.
+> The modern 0.7 release line is experimental. This guide covers its SDK API and bundled engine profile. Review the compatibility and migration sections before using existing data.
 
 ## What you get
 
@@ -39,10 +39,11 @@ Install the modern prerelease explicitly:
 npm install bsonlite-sdk@next
 ```
 
-To reproduce the original modern release exactly:
+Check the version selected by the release tag and the package installed in your application:
 
 ```sh
-npm install bsonlite-sdk@0.7.0-alpha.0
+npm view bsonlite-sdk@next version
+npm ls bsonlite-sdk
 ```
 
 Registry tags can move. Check them before choosing an upgrade:
@@ -50,6 +51,8 @@ Registry tags can move. Check them before choosing an upgrade:
 ```sh
 npm view bsonlite-sdk dist-tags --json
 ```
+
+A release that updates only documentation or package metadata retains its underlying runtime build. Use `npm ls bsonlite-sdk` to identify the installed npm package version; an embedded runtime/build version can differ.
 
 Installing this npm package does not install the BsonLite Console desktop application or a global CLI. Importing the SDK does not start a database or insert sample records.
 

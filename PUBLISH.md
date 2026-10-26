@@ -1,11 +1,11 @@
 # Publish BsonLite from your local checkout
 
-## Prepared release: 0.7.0-alpha.2 (public package metadata)
+## Prepared release: 0.7.0-alpha.3 (README clarification)
 
-This prepared release adds the BsonLite description, search keywords, official homepage and issue link to the npm package. It retains the complete canonical README unchanged. SDK, engine, matching source,
+This prepared release removes the old alpha number and original-release installation example from the user guide. The complete guide now explains how to check the current tag and installed npm package version, including the distinction from the underlying runtime build. Future releases that introduce no relevant changes continue to copy this same README unchanged. The public package metadata added in alpha.2 is retained. SDK, engine, matching source,
 licenses and Windows runtime reports remain byte-identical to the published
-0.7.0-alpha.0 package. The embedded SDK still reports 0.7.0-alpha.0; only the npm
-package version and public discovery/integrity metadata change. The metadata preparation tests do not constitute a new native runtime test. No new native
+0.7.0-alpha.0 package. The embedded SDK still reports 0.7.0-alpha.0; the npm
+package version, reviewed README and integrity metadata change. The metadata preparation tests do not constitute a new native runtime test. No new native
 runtime validation is claimed.
 
 The original `release/snapshot.json` and `release/packed/` remain intact as the
@@ -14,7 +14,7 @@ the baseline archive digest, the reviewed README digest and the digest of `relea
 helper verifies the baseline, prepares the documentation release and verifies the
 actual packed files before staging. It rejects unreviewed README changes and
 modified cached archives. No full engine rebuild or manual artifact download is
-needed for this metadata-only release. This file describes a prepared release; publication is complete only after npm approves it and the registry shows the new version.
+needed for this documentation release. This file describes a prepared release; publication is complete only after npm approves it and the registry shows the new version.
 
 ## 1. Update and verify
 
@@ -25,7 +25,7 @@ git pull --ff-only origin main
 npm run release:verify
 ```
 
-The final verification line must identify **bsonlite-sdk@0.7.0-alpha.2**.
+The final verification line must identify **bsonlite-sdk@0.7.0-alpha.3**.
 The root npm script heading can still display 0.6.0-rc.3 because the repository
 retains its separate legacy payload. Do not publish the root directory or bump
 its package.json version.
@@ -37,7 +37,7 @@ support (11.15+). The existing npm 11.16 CLI supports it.
 Optionally inspect the README in the actual publish archive:
 
 ```powershell
-tar -xOf .release/bsonlite-sdk-0.7.0-alpha.2.tgz package/README.md
+tar -xOf .release/bsonlite-sdk-0.7.0-alpha.3.tgz package/README.md
 npm run release:stage -- --dry-run
 ```
 
@@ -52,7 +52,7 @@ npm run release:stage
 npm stage list bsonlite-sdk
 ```
 
-The helper stages **0.7.0-alpha.2** with `--access public --tag next`. Complete
+The helper stages **0.7.0-alpha.3** with `--access public --tag next`. Complete
 browser/2FA authentication when requested.
 
 ## 3. Review and approve
@@ -74,24 +74,32 @@ staging it twice.
 npm view bsonlite-sdk@next version
 ```
 
-Expected: `0.7.0-alpha.2`.
+Expected: `0.7.0-alpha.3`.
 
 To make this documentation update replace the current default on npm's main
 package page and for ordinary installs:
 
 ```powershell
-npm dist-tag add bsonlite-sdk@0.7.0-alpha.2 latest
+npm dist-tag add bsonlite-sdk@0.7.0-alpha.3 latest
 npm view bsonlite-sdk dist-tags --json
 ```
 
 This promotes an alpha release to the default, just as promoting alpha.0 did.
-The `next` tag also remains on alpha.1. Refresh the npm page after propagation.
+After approval, `next` should also point to 0.7.0-alpha.3. Verify both tags; refresh the npm page after propagation.
 Consumers can install the explicit version or use the maintained tag:
 
 ```sh
-npm install bsonlite-sdk@0.7.0-alpha.2
+npm install bsonlite-sdk@0.7.0-alpha.3
 npm install bsonlite-sdk@next
 ```
+
+Verify the README separately from the version and tags:
+
+```powershell
+npm view bsonlite-sdk readme --registry=https://registry.npmjs.org/
+```
+
+The full guide should render on npm and its installation section should use `@next`, not the original alpha.0 installation example. On 26 October 2026, the published alpha.2 archive contained the complete reviewed README and matched the prepared archive's registry integrity, but the registry README field was empty. That is separate from the old version wording corrected in this release. A version/tag check alone does not establish that npm's website has refreshed its README. If the field remains empty or the page still shows an older guide after publication, preserve the package/version and registry evidence and investigate npm's README processing before publishing another version. npm has previously acknowledged a registry-side issue affecting staged-publication README display: https://github.com/npm/cli/issues/9405. This historical report does not establish the cause for this package.
 
 ## README policy: one maintained guide
 
