@@ -1,10 +1,10 @@
-# BsonLite
+# bsonlite-sdk
 
 **A portable, local document database for Node.js and Windows applications.**
 
 Add BsonLite to your application, connect once, and work with BSON documents through familiar MongoDB collection APIs. BsonLite manages its bundled local engine, connections and encrypted storage. Users do not need to install or configure a separate database server.
 
-[Documentation](https://bsonlite.com/docs/) · [Downloads](https://bsonlite.com/download.html) · [BsonLite Console](https://bsonlite.com/docs/console.html) · [Discord](https://discord.gg/vSRMRPYqs) · [Support development](https://buymeacoffee.com/bsonlite)
+Install BsonLite with npm, import the SDK, and connect to your local database. This guide covers application integration, queries, storage and recovery.
 
 > The modern 0.7 release line is experimental. This guide covers its SDK API and bundled engine profile. Review the compatibility and migration sections before using existing data.
 
@@ -17,54 +17,21 @@ Add BsonLite to your application, connect once, and work with BSON documents thr
 - **Bundled dependencies:** the engine and JavaScript dependencies are included. No engine-download postinstall step, Python or C++ compiler is required by consumers.
 - **Optional desktop tools:** inspect a running application with BsonLite Console and its query console or CLI.
 
-BsonLite uses a custom MongoDB Community engine. It runs an owned local server process; it is not an in-process SQLite-style library. The standalone `BsonLite.cjs` file is the application distribution, while a running database creates a storage directory with multiple files.
-
-## Requirements
-
-| Component | Modern release requirements |
-| --- | --- |
-| Operating system | Windows x64, build 20348 or later, such as Windows 11 or Windows Server 2022+ |
-| Node.js | 20.19.0 or later; Node.js 24 is the tested maintainer runtime |
-| Storage | A private, writable local directory with appropriate account access controls |
-| Database engine | Bundled custom MongoDB Community 9.0.4 / WiredTiger 12 |
-| Node.js driver | Bundled MongoDB driver 7.7.0 |
-
-The published native package targets Windows x64. Windows 10 support from the earlier 0.6 line should not be assumed for this modern build. Desktop installer checks on Windows Server do not establish testing on every Windows Home/Pro machine.
+BsonLite uses a custom MongoDB Community engine. It runs an owned local server process; it is not an in-process SQLite-style library. A running database creates a storage directory with multiple files.
 
 ## Installation
 
-Install the modern prerelease explicitly:
-
 ```sh
-npm install bsonlite-sdk@next
+npm i bsonlite-sdk
 ```
 
-Check the version selected by the release tag and the package installed in your application:
-
-```sh
-npm view bsonlite-sdk@next version
-npm ls bsonlite-sdk
-```
-
-Registry tags can move. Check them before choosing an upgrade:
-
-```sh
-npm view bsonlite-sdk dist-tags --json
-```
-
-A release that updates only documentation or package metadata retains its underlying runtime build. Use `npm ls bsonlite-sdk` to identify the installed npm package version; an embedded runtime/build version can differ.
-
-Installing this npm package does not install the BsonLite Console desktop application or a global CLI. Importing the SDK does not start a database or insert sample records.
-
-### Standalone alternative
-
-[Download BsonLite.cjs](https://bsonlite.com/download.php?file=bsonlite), place it beside your application entry file, and replace the npm import with:
+Import the SDK in your application:
 
 ```js
-const BsonLite = require('./BsonLite.cjs');
+const BsonLite = require('bsonlite-sdk');
 ```
 
-The npm package and standalone file are alternative distributions. Keep the same import path across your application's modules.
+The package includes its database engine and JavaScript dependencies. Importing it does not start a database or insert sample records. Await `connect()` before accessing collections.
 
 ## Quick start
 
@@ -111,6 +78,18 @@ For ES modules:
 ```js
 import BsonLite from 'bsonlite-sdk';
 ```
+
+## Requirements
+
+| Component | Modern release requirements |
+| --- | --- |
+| Operating system | Windows x64, build 20348 or later, such as Windows 11 or Windows Server 2022+ |
+| Node.js | 20.19.0 or later; Node.js 24 is the tested maintainer runtime |
+| Storage | A private, writable local directory with appropriate account access controls |
+| Database engine | Bundled custom MongoDB Community 9.0.4 / WiredTiger 12 |
+| Node.js driver | Bundled MongoDB driver 7.7.0 |
+
+The published native package targets Windows x64. Windows 10 support from the earlier 0.6 line should not be assumed for this modern build. Desktop installer checks on Windows Server do not establish testing on every Windows Home/Pro machine.
 
 ## Connections and storage
 
@@ -242,17 +221,6 @@ await BsonLite.collection('payments').insertOne({
 
 Use `BsonLite.ObjectId` and `BsonLite.BSON` for typed values. Plain JSON cannot represent every BSON type faithfully. See [BSON types](https://bsonlite.com/docs/bson-types.html).
 
-## BsonLite Console and CLI
-
-[Download BsonLite Console](https://bsonlite.com/download.php?file=console) to browse collections, inspect documents and run supported database expressions. Console 0.3 supports modern and earlier running BsonLite apps through its app-link protocol.
-
-1. Start your BsonLite application and keep it running.
-2. Open Console under the same Windows account.
-3. Select the discovered database and click **Connect**.
-4. Connections begin read-only; enable writes in Options when needed.
-
-The Console interpreter is not full `mongosh` and does not execute arbitrary JavaScript programs. Its expression support can be narrower than application code using the driver's APIs. The desktop installer includes its runtime; the optional terminal CLI is explained in the [Console guide](https://bsonlite.com/docs/console.html).
-
 ## Security and encrypted storage
 
 - The custom engine encrypts live database files using XChaCha20-Poly1305 with per-store keys; the modern native profile also covers temporary spill files.
@@ -331,16 +299,36 @@ Prepared npm packages include `MODERN_VALIDATION.md`, `validation.json` and matc
 
 See the [troubleshooting guide](https://bsonlite.com/docs/troubleshooting.html). When reporting a problem, include package/engine versions, Windows build, Node.js version and a minimal reproduction. Do not attach private vaults, credentials, keys or personal records.
 
-## Source, licenses and support
+## BsonLite Console and CLI
+
+BsonLite Console is an optional, separately installed desktop application; `npm i bsonlite-sdk` does not install the GUI or a global CLI.
+
+[Download BsonLite Console](https://bsonlite.com/console.html) to browse collections, inspect documents and run supported database expressions. Console 0.3 supports modern and earlier running BsonLite apps through its app-link protocol.
+
+1. Start your BsonLite application and keep it running.
+2. Open Console under the same Windows account.
+3. Select the discovered database and click **Connect**.
+4. Connections begin read-only; enable writes in Options when needed.
+
+The Console interpreter is not full `mongosh` and does not execute arbitrary JavaScript programs. Its expression support can be narrower than application code using the driver's APIs. The desktop installer includes its runtime; the optional terminal CLI is explained in the [Console guide](https://bsonlite.com/docs/console.html).
+
+## Links, licenses and support
 
 BsonLite is independently developed and is not an official MongoDB product.
 
+- [Website](https://bsonlite.com/).
+- [SDK documentation](https://bsonlite.com/docs/).
+- [npm package](https://www.npmjs.com/package/bsonlite-sdk).
 - [BsonLite core](https://github.com/MohammadAtikurRahman/BsonLite): engine integration, lifecycle and storage.
 - [npm SDK repository](https://github.com/MohammadAtikurRahman/Bsonlite-SDK): package exports and release tooling.
-- [BsonLite Console](https://github.com/MohammadAtikurRahman/BsonLite-Console): GUI, CLI and installer.
+- [BsonLite Console](https://bsonlite.com/console.html): desktop GUI, query console and optional CLI.
+- [Downloads](https://bsonlite.com/download.html).
+- [Discord community](https://discord.gg/vSRMRPYqs).
+- [Contact](mailto:info@bsonlite.com).
 - [Report an issue](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/issues).
 - [Support BsonLite](https://buymeacoffee.com/bsonlite).
 
 The JavaScript wrapper is MIT licensed. The modified engine remains SSPL-1.0, and bundled components retain their own licenses. The wrapper's license does not relicense the engine. Prepared modern npm packages include matching modified engine source under `source/` and component notices under `licenses/`. Additional source downloads are available on the [download page](https://bsonlite.com/download.html#source).
 
 Maintainers: see the [publishing guide](https://github.com/MohammadAtikurRahman/Bsonlite-SDK/blob/main/PUBLISH.md). This README is the canonical user guide copied unchanged into newly prepared modern packages. Keep its contents stable between releases; edit it when features, requirements, behavior or documentation need a meaningful correction.
+
