@@ -1,0 +1,61 @@
+name: Published SDK query compatibility
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, validation/query-compatibility-20261026]
+    paths: ['scripts/query-compatibility*.cjs', '.github/workflows/query-compatibility.yml']
+permissions:
+  contents: read
+concurrency:
+  group: query-compatibility-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  windows-parity:
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with: {node-version: '24', package-manager-cache: false}
+      - name: Install the actual published modern SDK and the matching driver
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force .query-runtime | Out-Null
+          Set-Content -Path .query-runtime/package.json -Value '{"name":"bsonlite-query-validation","private":true}'
+          npm install --prefix .query-runtime --ignore-scripts --no-audit --no-fund bsonlite-sdk@0.7.0-alpha.1 mongodb@7.7.0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Download and verify official MongoDB Community 9.0.4
+        shell: pwsh
+        run: |
+          $url = 'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-9.0.4.zip'
+          $zip = Join-Path $env:RUNNER_TEMP 'mongodb-community-9.0.4.zip'
+          curl.exe --fail --location --retry 3 --max-time 600 $url --output $zip
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $expected = '1e6234c8c33e75de3659a7e1104cb12f1cb68ae41cba60b625537c1ed9256d43'
+          if ((Get-FileHash $zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) { throw 'Official Community ZIP checksum mismatch' }
+          $members = @(tar -tf $zip | Where-Object { $_.EndsWith('/bin/mongod.exe') })
+          if ($members.Count -ne 1) { throw 'Expected exactly one Community mongod.exe' }
+          $out = Join-Path $env:RUNNER_TEMP 'mongodb-community-9.0.4'
+          New-Item -ItemType Directory -Force $out | Out-Null
+          tar -xf $zip -C $out $members[0]
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $binary = Join-Path $out $members[0]
+          "COMMUNITY_BINARY=$binary" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Run the differential matrix on two real standalone databases
+        shell: pwsh
+        run: node scripts/query-compatibility.cjs
+      - name: Publish readable summary
+        if: always()
+        shell: pwsh
+        run: |
+          if (Test-Path query-report/report.md) {
+            Get-Content query-report/report.md | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append
+          }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: query-compatibility-${{ github.sha }}
+          path: query-report/
+          if-no-files-found: warn
+          retention-days: 30
