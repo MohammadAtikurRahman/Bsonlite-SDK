@@ -153,3 +153,37 @@ test('Windows Git CRLF README checkouts retain the reviewed canonical release by
   const ready = prepareRelease(f.root);
   assert.equal(ready.version, '0.7.0-alpha.1');
 });
+
+test('a metadata release changes only allowed package fields and keeps the complete README and payload', t => {
+  const f = fixture(t, { docs: true });
+  const metadataBytes = fs.readFileSync(path.resolve(__dirname, '../release/package-metadata.json'));
+  const metadata = JSON.parse(metadataBytes);
+  // A Windows checkout may use CRLF, but the reviewed digest is over LF bytes.
+  fs.writeFileSync(path.join(f.root, 'release/package-metadata.json'), metadataBytes.toString().replace(/\n/g, '\r\n'));
+  const manifestFile = path.join(f.root, 'release/documentation.json');
+  const manifest = JSON.parse(fs.readFileSync(manifestFile));
+  Object.assign(manifest, { version: '0.7.0-alpha.2', metadataSha256: sha(metadataBytes) });
+  fs.writeFileSync(manifestFile, JSON.stringify(manifest));
+  const ready = prepareRelease(f.root);
+  assert.equal(ready.version, '0.7.0-alpha.2');
+  const extracted = path.join(f.root, 'metadata-inspect'); fs.mkdirSync(extracted);
+  const { spawnSync } = require('node:child_process');
+  assert.equal(spawnSync('tar', ['-xzf', ready.file, '-C', extracted]).status, 0);
+  const pkg = JSON.parse(fs.readFileSync(path.join(extracted, 'package/package.json')));
+  assert.deepEqual(pkg, { name: 'bsonlite-sdk', version: ready.version, publishConfig: { access: 'public', tag: 'next' }, ...metadata });
+  assert.deepEqual(fs.readFileSync(path.join(extracted, 'package/README.md')), fs.readFileSync(path.join(f.root, 'README.md')));
+  assert.equal(fs.readFileSync(path.join(extracted, 'package/BsonLite.cjs'), 'utf8'), 'synthetic SDK fixture');
+  assert.equal(fs.readFileSync(path.join(extracted, 'package/source/BsonLite-modern-engine-source.tar.gz'), 'utf8'), 'synthetic matching source');
+  fs.appendFileSync(path.join(f.root, 'release/package-metadata.json'), ' ');
+  assert.throws(() => prepareRelease(f.root), /Package metadata changed/);
+});
+
+test('public metadata cannot modify runtime settings or introduce unknown fields', t => {
+  const { readPackageMetadata } = require('../scripts/package-metadata.cjs');
+  const f = fixture(t);
+  const metadata = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../release/package-metadata.json')));
+  for (const extra of [{ main: './replacement.cjs' }, { dependencies: { unexpected: '*' } }, { scripts: { install: 'unexpected' } }]) {
+    fs.writeFileSync(path.join(f.root, 'release/package-metadata.json'), JSON.stringify({ ...metadata, ...extra }));
+    assert.throws(() => readPackageMetadata(f.root), /Only public discovery fields/);
+  }
+});

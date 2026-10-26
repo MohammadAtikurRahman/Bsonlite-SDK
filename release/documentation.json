@@ -2,6 +2,7 @@
   "format": 1,
   "baseVersion": "0.7.0-alpha.0",
   "baseSha256": "ae05f04312efc318948b6cf8a517063225ce751349b43a4a5bf1e7e6ec7233cf",
-  "version": "0.7.0-alpha.1",
-  "readmeSha256": "a1e5420d1460e1d080c02bbcb0336ff18e9dd9c1ba4fc40981b1ef0279b04cce"
+  "version": "0.7.0-alpha.2",
+  "readmeSha256": "a1e5420d1460e1d080c02bbcb0336ff18e9dd9c1ba4fc40981b1ef0279b04cce",
+  "metadataSha256": "0e9b1c82ec1c76fe84414e3d1da417ebd366376b12455d179a2441d1441ba45f"
 }

@@ -1,7 +1,7 @@
 {
   "name": "bsonlite-sdk",
   "version": "0.6.0-rc.3",
-  "description": "A portable database SDK for Node.js and Windows apps, with encryption and automatic BsonLite Console and CLI connections.",
+  "description": "BsonLite: a portable MongoDB-based local database for Node.js and Windows, with BSON queries, native encrypted storage and automatic engine setup. Experimental alpha.",
   "main": "./index.cjs",
   "exports": {
     ".": "./index.cjs",
@@ -24,20 +24,19 @@
     "url": "git+https://github.com/MohammadAtikurRahman/Bsonlite-SDK.git"
   },
   "bugs": {
-    "url": "https://github.com/MohammadAtikurRahman/Bsonlite-SDK/issues",
-    "email": "info@bsonlite.com"
+    "url": "https://github.com/MohammadAtikurRahman/Bsonlite-SDK/issues"
   },
   "keywords": [
     "bsonlite",
+    "mongodb",
     "database",
-    "offline",
     "nodejs",
-    "windows",
+    "offline",
+    "document-database",
     "bson",
+    "windows",
     "encrypted-storage",
-    "desktop",
-    "bsonlite-console",
-    "cli"
+    "bsonlite-console"
   ],
   "files": [
     "BsonLite.cjs",

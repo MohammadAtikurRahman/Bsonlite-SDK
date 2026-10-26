@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const assert = require('node:assert/strict');
+const { readPackageMetadata } = require('./package-metadata.cjs');
 
 const REPOSITORY = 'MohammadAtikurRahman/BsonLite';
 const ENGINE = '9.0.4', DRIVER = '7.7.0';
@@ -99,11 +100,10 @@ async function prepare(options) {
     put('licenses/SOURCE_AND_NOTICES.md', '# Source and notices\n\nThe JavaScript wrapper is MIT licensed. The modified engine remains SSPL-1.0; its matching source is source/BsonLite-modern-engine-source.tar.gz. Other components retain the licenses included here. The MIT wrapper does not relicense the engine.\n');
     const pkg = {
       name: 'bsonlite-sdk', version,
-      description: 'Experimental portable database SDK with native encryption and BsonLite Console connections.',
       main: './index.cjs', exports: { '.': './index.cjs', './package.json': './package.json' },
       engines: { node: '>=20.19.0' }, os: ['win32'], cpu: ['x64'],
       license: 'SEE LICENSE IN licenses/SOURCE_AND_NOTICES.md', author: 'Atikur Rahman',
-      homepage: 'https://bsonlite.com/',
+      ...readPackageMetadata(path.resolve(__dirname, '..')),
       repository: { type: 'git', url: 'git+https://github.com/MohammadAtikurRahman/Bsonlite-SDK.git' },
       files: ['BsonLite.cjs', 'index.cjs', 'build-info.json', 'validation.json', 'validation/', 'SHA256SUMS.txt', 'source/', 'licenses/', 'MODERN_VALIDATION.md', 'scripts/verify-modern.cjs'],
       scripts: { test: 'node scripts/verify-modern.cjs', verify: 'node scripts/verify-modern.cjs', prepack: 'node scripts/verify-modern.cjs', prepublishOnly: 'node scripts/verify-modern.cjs' },

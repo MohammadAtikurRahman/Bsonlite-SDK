@@ -1,0 +1,19 @@
+{
+  "description": "BsonLite: a portable MongoDB-based local database for Node.js and Windows, with BSON queries, native encrypted storage and automatic engine setup. Experimental alpha.",
+  "homepage": "https://bsonlite.com/",
+  "bugs": {
+    "url": "https://github.com/MohammadAtikurRahman/Bsonlite-SDK/issues"
+  },
+  "keywords": [
+    "bsonlite",
+    "mongodb",
+    "database",
+    "nodejs",
+    "offline",
+    "document-database",
+    "bson",
+    "windows",
+    "encrypted-storage",
+    "bsonlite-console"
+  ]
+}

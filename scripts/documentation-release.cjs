@@ -1,10 +1,11 @@
 'use strict';
-// A documentation-only overlay on a checksum-pinned, Windows-validated release.
+// A documentation/public-metadata overlay on a pinned, Windows-validated release.
 // Engine, SDK, matching source, licenses and runtime reports stay byte-identical.
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const assert = require('node:assert/strict');
+const { readPackageMetadata } = require('./package-metadata.cjs');
 const { spawnSync } = require('node:child_process');
 const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const changed = new Set(['package.json', 'README.md', 'scripts/verify-modern.cjs', 'SHA256SUMS.txt']);
@@ -41,6 +42,7 @@ function prepareDocumentationRelease(root, base, snapshot) {
   // Git may check text out with CRLF on Windows; the reviewed canonical bytes use LF.
   const readme = Buffer.from(fs.readFileSync(path.join(root, 'README.md'), 'utf8').replace(/\r\n/g, '\n'));
   assert.equal(sha(readme), manifest.readmeSha256, 'README changed: explicitly refresh the documentation release manifest');
+  const metadata = manifest.metadataSha256 === undefined ? {} : readPackageMetadata(root, manifest.metadataSha256);
   assert(process.env.npm_execpath && fs.existsSync(process.env.npm_execpath), 'Run release preparation through npm run release:verify');
   const temporary = fs.mkdtempSync(path.join(root, '.release', '.documentation-'));
   try {
@@ -51,6 +53,7 @@ function prepareDocumentationRelease(root, base, snapshot) {
     const pkg = JSON.parse(originals.get('package.json').toString('utf8'));
     assert.equal(pkg.version, manifest.baseVersion);
     pkg.version = manifest.version;
+    Object.assign(pkg, metadata);
     fs.writeFileSync(path.join(prepared, 'package.json'), JSON.stringify(pkg, null, 2) + '\n');
     fs.writeFileSync(path.join(prepared, 'README.md'), readme);
     const verifierFile = path.join(prepared, 'scripts/verify-modern.cjs');

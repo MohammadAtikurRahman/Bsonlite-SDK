@@ -39,6 +39,8 @@ test('a prepared fixture preserves matching source, next tag and inert CJS/ESM e
   const canonicalReadme = fs.readFileSync(path.resolve(__dirname, '../README.md'));
   assert.deepEqual(fs.readFileSync(path.join(f.out, 'README.md')), canonicalReadme);
   const pkg = JSON.parse(fs.readFileSync(path.join(f.out,'package.json')));
+  const metadata = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../release/package-metadata.json')));
+  for (const [key, value] of Object.entries(metadata)) assert.deepEqual(pkg[key], value, 'Published package must retain public metadata: ' + key);
   assert.equal(pkg.publishConfig.tag,'next'); assert.equal(pkg.engines.node,'>=20.19.0');
   assert.equal(pkg.scripts.install,undefined); assert.equal(pkg.scripts.postinstall,undefined);
   assert.equal(fs.existsSync(path.join(f.out,'auto-console.cjs')),false,'The integrated adapter must not be wrapped twice');
