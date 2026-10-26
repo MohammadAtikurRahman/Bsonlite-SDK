@@ -1,5 +1,7 @@
 ## Existing 0.6 distribution
 
+> Archived reference for existing 0.6 applications. New projects should follow the current [SDK README](README.md) and use `npm i bsonlite-sdk`. The explicit version below is only for applications that must retain the old engine.
+
 Add BsonLite to your project, connect once and work with documents through collections. BsonLite manages the local database engine, connection settings and encrypted storage.
 
 [Documentation](https://bsonlite.com/docs/index.html) · [Download desktop software](https://bsonlite.com/console.html) · [Console & CLI guide](https://bsonlite.com/console.html) · [Discord](https://discord.gg/vSRMRPYqs) · [GitHub](https://github.com/MohammadAtikurRahman/Bsonlite-SDK)
@@ -17,7 +19,7 @@ actual Windows storage, migration/CLI and final embedded-BsonLite gates passed i
 [run 40207704023](https://github.com/MohammadAtikurRahman/BsonLite/actions/runs/40207704023).
 The [prepared npm tarball](https://github.com/MohammadAtikurRahman/BsonLite/actions/runs/40207704023/artifacts/12604842008)
 includes matching modified engine source and the original test reports, and
-was packed, installed and checksum/import verified on Windows. It is published under the `next` tag.
+was packed, installed and checksum/import verified on Windows. See the current [SDK README](README.md) for the maintained npm installation.
 It requires Node.js 20.19+ and Windows x64 build 20348+.
 See the [download/install/publish guide](MODERN_ENGINE.md) and
 [migration instructions](https://github.com/MohammadAtikurRahman/BsonLite/blob/main/native/modern/UPGRADE.md)
@@ -27,16 +29,12 @@ the 0.6 distribution; use the separately prepared 0.7 tarball for the new engine
 ## Installation
 
 ```sh
-npm install bsonlite-sdk
+npm i bsonlite-sdk@0.6.0-rc.3
 ```
 
 BsonLite includes its engine and JavaScript dependencies. Users do not need to install a separate database, Python or a compiler. Installing or importing the package does not start a database or insert records.
 
-To select the earlier default engine line:
-
-```sh
-npm install bsonlite-sdk@latest
-```
+The unversioned command installs the current release and does not preserve the earlier engine line. Keep the explicit legacy version above only when maintaining an existing 0.6 application.
 
 Restart your app after updating. Check the registry version with `npm view bsonlite-sdk version`, or install a specific published package version. A BsonLite package does not install the desktop software or a global CLI command.
 

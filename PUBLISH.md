@@ -67,7 +67,7 @@ staging it twice.
 ## 4. Verify publication and update the main page
 
 ```powershell
-npm view bsonlite-sdk@next version
+npm view bsonlite-sdk@0.7.0-alpha.4 version
 ```
 
 Expected: `0.7.0-alpha.4`.

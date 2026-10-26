@@ -42,7 +42,7 @@ npm stage list bsonlite-sdk
 npm stage approve YOUR_NEW_STAGE_ID
 ```
 
-The prerelease uses `next`. Registry publication is a separate owner action; pushing GitHub source does not publish a package. After approval/publication, consumers can install `bsonlite-sdk@next`.
+The staging workflow uses a prerelease tag for maintainer review. Registry publication is a separate owner action; pushing GitHub source does not publish a package. To make an approved release the default for users, follow the promotion step in [PUBLISH.md](PUBLISH.md). The public installation command is `npm i bsonlite-sdk`.
 
 A previously published version cannot be reused. Reprepare with `--version 0.7.0-alpha.1` when a new version is needed; editing the prepared package.json alone breaks its checksums.
 
