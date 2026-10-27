@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-27",
+  "run": "https://github.com/MohammadAtikurRahman/Bsonlite-SDK/actions/runs/40446340893",
+  "testedSuiteCommit": "c7f25aac8e5260df7d6249bdc036f696ff2ae212",
+  "workflowConclusion": "failure: three observed Console semantic differences, not infrastructure failure",
+  "platform": "Windows Server 2022 x64 (GitHub windows-2022)",
+  "node": "v24.22.1",
+  "repositoryPins": {
+    "core": "31183756a2a3cde31bc04f67f5899b3606545ee4",
+    "sdk": "94a6ab7a290f332cbcdd620555ae489d31e786aa",
+    "console": "333b246d80472d69b1304a11e24d0c68bd2f05d9"
+  },
+  "priorDifferentialRun": "https://github.com/MohammadAtikurRahman/Bsonlite-SDK/actions/runs/40262963488",
+  "currentCoreArtifactRun": "https://github.com/MohammadAtikurRahman/BsonLite/actions/runs/40308893103",
+  "currentCoreArtifactId": 12661302859,
+  "finalAuditArtifactId": 12708436974,
+  "finalAuditArchiveSha256": "07753176ca9a3cfb36853b21fc88da9fb57259c331901c2c4f695209f4f2cd1d",
+  "expectedEngineVersion": "9.0.4",
+  "engineSummaryPerTarget": {
+    "match": 327,
+    "expected-error-match": 10,
+    "profile-limit": 3,
+    "standalone-limit": 2
+  },
+  "consoleSummaryPerTarget": {
+    "match": 13,
+    "console-limit": 9,
+    "difference": 3
+  },
+  "targets": {
+    "published": {
+      "packageVersion": "0.7.0-alpha.4",
+      "sdkVersion": "0.7.0-alpha.0",
+      "sdkSha256": "bc5a3cd20dc217c0a4c0255921dad687aa94844fe1730a6ad51bf56b50a83172",
+      "runtimeCoreCommit": "69920051901246994896c1bc53cc5f32bacaabd3",
+      "engineSha256": "61d9c95ae1e58d96ac7f74d5aa46e7aefc1f8a3208a86097dbc77c3af62f5307"
+    },
+    "current-core": {
+      "packageVersion": "0.7.0-alpha.0",
+      "sdkVersion": "0.7.0-alpha.0",
+      "sdkSha256": "286a10516ddfc38bbf397d5ac3c5bd2807a29f5df0ff5af78cde608791d2703b",
+      "runtimeCoreCommit": "31183756a2a3cde31bc04f67f5899b3606545ee4",
+      "engineSha256": "6898780b2265a2c10583c31288a597a1c3deba064f76d2da7a4b5eacf024b0b9"
+    }
+  },
+  "sha256": {
+    "current-core/consumer-package-lock.json": "ac909f1476243086d48bd720f3a9a8a485137b6a68518f9ce82ec84b53e06a0e",
+    "current-core/report.json": "83fe1cfda4e7f105a7927fe5bdbd0aa915a71d458f9acee141a1151a7373aca8",
+    "current-core/report.md": "1a4758daa766a11c58f295fcabd04fe8575a3169227cb353908a2550cc1cdbc7",
+    "native-evidence.zip": "07753176ca9a3cfb36853b21fc88da9fb57259c331901c2c4f695209f4f2cd1d",
+    "published/consumer-package-lock.json": "0c2a76438bd536e7a060efd972f91e3071833667bfe002855918a7a11ddc3c95",
+    "published/report.json": "e7d93e4b7655593bcdb93ebb6c96d8017e41a6d5d341f212a960b1e836390139",
+    "published/report.md": "6b39f3f79f2a48e40ce0210b6d6f8581df33162ad3c2fce4d59b6e57907e9750"
+  },
+  "warnings": [
+    "Finite suite; no full Community parity claim.",
+    "The 342 cases are repeated for two actual distributions, not 684 distinct operators.",
+    "Console test uses real connection/interpreter/bridge classes, not Electron GUI automation.",
+    "No engine, security settings, main branch, npm publication, or website deployment changed."
+  ]
+}
