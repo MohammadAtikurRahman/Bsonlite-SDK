@@ -10,6 +10,7 @@ const { spawn } = require('node:child_process');
 const { createRequire } = require('node:module');
 const { cases, seed, typeSeed } = require('./query-compatibility-cases.cjs');
 const { generatedSeed } = require('./query-compatibility-extra.cjs');
+require('./query-compatibility-boundaries.cjs').extend(cases);
 const deps = createRequire(path.resolve(process.env.QUERY_RUNTIME || '.query-runtime', 'package.json'));
 const { MongoClient, BSON } = deps('mongodb');
 const sdk = deps('bsonlite-sdk');
@@ -21,7 +22,8 @@ const name = 'query_compat';
 const report = {
   format: 1, started: new Date().toISOString(), run: process.env.GITHUB_RUN_ID ? `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}` : null,
   commit: process.env.GITHUB_SHA || null, platform: process.platform, node: process.version,
-  mode: 'published-windows-sdk-vs-community-standalone', results: [],
+  mode: process.env.QUERY_TARGET || 'published-windows-sdk-vs-community-standalone', results: [],
+  repositoryPins: { core: '31183756a2a3cde31bc04f67f5899b3606545ee4', sdk: '94a6ab7a290f332cbcdd620555ae489d31e786aa', console: '333b246d80472d69b1304a11e24d0c68bd2f05d9' },
   limitations: ['Finite regression matrix, not exhaustive Community feature parity.', 'No cluster, replica-set, Atlas or mongosh parity claim.', 'No performance, power-loss or independent security certification.', 'Comparison preserves driver-decoded BSON via canonical EJSON, normalizes object-key order and preserves array order. Server-side $type is checked separately.', 'Random sample/rand and currentDate tests compare validity contracts, not identical random values or timestamps.']
 };
 function digest(file) { return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'); }
@@ -51,7 +53,7 @@ async function attempt(env, test) {
 function classify(test, a, b) {
   if (a.ok && b.ok) return JSON.stringify(a.value) === JSON.stringify(b.value) ? 'match' : 'difference';
   if (!a.ok && !b.ok) {
-    if (test.expectedError && a.error.code === test.expectedError && b.error.code === test.expectedError) return 'expected-error-match';
+    if (test.expectedError && a.error.code === test.expectedError && b.error.code === test.expectedError && a.error.name === b.error.name && a.error.codeName === b.error.codeName) return 'expected-error-match';
     if (test.topologyLimit && a.error.code === b.error.code && [20,40573].includes(a.error.code)) return 'standalone-limit';
     return 'shared-rejection';
   }
@@ -64,6 +66,7 @@ function save() {
   const groups = {};
   for (const r of report.results) { groups[r.group] ||= {}; groups[r.group][r.status] = (groups[r.group][r.status] || 0) + 1; }
   report.groups = groups;
+  if (report.console) report.consoleSummary = report.console.results.reduce((a, x) => { a[x.status] = (a[x.status] || 0) + 1; return a; }, {});
   fs.writeFileSync(path.join(reportDirectory, 'report.json'), JSON.stringify(report, null, 2) + '\n');
   const lines = ['# BsonLite query compatibility audit', '', `Run: ${report.run || 'local'}`, '', `Commit: ${report.commit || 'local'}`, '',
     `Published npm: ${report.packageVersion || 'unknown'}; embedded SDK: ${report.sdkVersion || 'unknown'}; expected Community: ${expectedVersion}.`, '',
@@ -114,15 +117,20 @@ function makeEnvironment(db, bson, client) {
     assert.equal(process.platform, 'win32', 'The published native SDK must be tested on Windows; no mocks or Linux source previews allowed.');
     const sdkDirectory = path.dirname(deps.resolve('bsonlite-sdk/package.json'));
     report.packageVersion = deps('bsonlite-sdk/package.json').version;
-    assert.equal(report.packageVersion, '0.7.0-alpha.1');
+    assert.equal(report.packageVersion, process.env.QUERY_PACKAGE_VERSION || '0.7.0-alpha.4');
     report.sdkVersion = sdk.version;
     const validation = JSON.parse(fs.readFileSync(path.join(sdkDirectory, 'validation.json')));
     report.sdkSha256 = digest(path.join(sdkDirectory, 'BsonLite.cjs'));
     assert.equal(report.sdkSha256, validation.sdkSha256);
     report.originalRuntimeEvidence = validation;
+    if (process.env.QUERY_TARGET?.startsWith('core-')) {
+      assert.equal(validation.commit, report.repositoryPins.core, 'Current-core artifact must match the inspected core commit');
+      assert.equal(validation.run, 'https://github.com/MohammadAtikurRahman/BsonLite/actions/runs/40308893103');
+    }
     const binary = path.resolve(process.env.COMMUNITY_BINARY || '');
     assert(fs.statSync(binary).isFile(), 'Set COMMUNITY_BINARY to the official 9.0.4 mongod.exe');
     report.communityBinarySha256 = digest(binary);
+    assert.equal(report.communityBinarySha256, 'af268c8aceadfe93076b0fcbd87d47f9d448824b98632c778bcd06f560ace167');
     const data = path.join(work, 'community'); fs.mkdirSync(data);
     const port = await freePort(), uri = 'mongodb://127.0.0.1:' + port;
     child = spawn(binary, ['--dbpath', data, '--bind_ip', '127.0.0.1', '--port', String(port), '--auth', '--logpath', path.join(work, 'community.log'), '--wiredTigerCacheSizeGB', '0.25'], { windowsHide: true, stdio: 'ignore' });
@@ -134,7 +142,15 @@ function makeEnvironment(db, bson, client) {
     const appPassword = crypto.randomBytes(32).toString('hex');
     await admin.db(name).command({ createUser: 'audit_app', pwd: appPassword, roles: [{ role: 'readWrite', db: name }] });
     community = new MongoClient(uri, { directConnection: true, authSource: name, auth: { username: 'audit_app', password: appPassword }, writeConcern: { w: 1, j: true }, retryWrites: false, serverSelectionTimeoutMS: 5000, socketTimeoutMS: 15000 }); await community.connect();
-    lite = await sdk.open({ name, directory: path.join(work, 'bsonlite'), console: false, startupTimeoutMS: 90000 });
+    // Both overrides are confined to this new temporary test root, outside the checkout.
+    process.env.BSONLITE_DATA_HOME = path.join(work, 'private-managed');
+    process.env.BSONLITE_CONSOLE_HOME = path.join(work, 'console-sessions');
+    lite = await sdk.open({ name, directory: path.join(work, 'bsonlite'), console: true, startupTimeoutMS: 90000 });
+    assert.equal(lite.info.authentication, 'SCRAM-SHA-256');
+    assert.equal(lite.info.security.storageEncryption.required, true);
+    assert.equal(lite.info.security.storageEncryption.verified, true);
+    assert.equal(lite.info.security.storageEncryption.coverage, 'full');
+    assert(lite.connectionURL, 'The real SDK app-link is required for Console coverage');
     const liteClient = lite.collection('probe').client;
     assert(liteClient && typeof liteClient.db === 'function', 'Driver collection must expose its public MongoClient');
     const buildA = await liteClient.db('admin').command({ buildInfo: 1 });
@@ -153,6 +169,12 @@ function makeEnvironment(db, bson, client) {
       console.log(`${report.results.length}/${cases.length} ${status} ${test.id}`);
       if (report.results.length % 20 === 0) save();
     }
+    assert.equal(report.results.length, cases.length);
+    report.caseSourceSha256 = Object.fromEntries(['query-compatibility.cjs','query-compatibility-cases.cjs','query-compatibility-extra.cjs','query-compatibility-boundaries.cjs','query-compatibility-console.cjs'].map(n => [n,digest(path.join(__dirname,n))]));
+    if (process.env.BSONLITE_CONSOLE_REPO) {
+      report.console = await require('./query-compatibility-console.cjs').run({lite, community, communityUri:uri, appPassword, name, sdk, canonical, consoleRoot:process.env.BSONLITE_CONSOLE_REPO});
+    }
+    report.applicationAPI = { commandOnDatabase: typeof lite.command, collectionIsDriverCollection: typeof lite.collection('people').find === 'function', note: 'Database exposes collection/createCollection/listCollections/ping/close; it is not a full MongoDB Db or MongoClient. Driver-level capabilities do not imply additional wrapper methods.' };
     report.complete = true;
   } catch (error) { report.fatal = errorInfo(error); process.exitCode = 2; console.error('AUDIT INFRASTRUCTURE FAILURE:', error.message); }
   finally {
@@ -164,7 +186,7 @@ function makeEnvironment(db, bson, client) {
       if (child.exitCode === null) child.kill();
     }
     save();
-    if (report.results.some(x => ['difference', 'shared-rejection'].includes(x.status)) && !process.exitCode) process.exitCode = 1;
+    if ((report.results.some(x => ['difference', 'shared-rejection'].includes(x.status)) || report.console?.results.some(x => x.status === 'difference')) && !process.exitCode) process.exitCode = 1;
     console.log(JSON.stringify({ complete: report.complete || false, summary: report.summary, report: reportDirectory }));
   }
 })();

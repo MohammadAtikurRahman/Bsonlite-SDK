@@ -1,0 +1,99 @@
+name: Current BsonLite differential audit
+on:
+  push:
+    branches: [validation/query-compatibility-20261027]
+    paths: ['scripts/query-compatibility*.cjs', '.github/workflows/query-compatibility-current.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with: {node-version: '24.22.1', package-manager-cache: false}
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MohammadAtikurRahman/BsonLite-Console
+          ref: 333b246d80472d69b1304a11e24d0c68bd2f05d9
+          path: .console-current
+          persist-credentials: false
+      - run: npm ci --omit=dev --ignore-scripts --no-audit --no-fund
+        working-directory: .console-current
+      - name: Install the pinned currently published SDK (no publishing)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force .query-runtime | Out-Null
+          Set-Content .query-runtime/package.json '{"name":"bsonlite-query-validation","private":true}'
+          npm install --prefix .query-runtime --ignore-scripts --no-audit --no-fund bsonlite-sdk@0.7.0-alpha.4 mongodb@7.7.0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Download and verify stock Community 9.0.4
+        shell: pwsh
+        run: |
+          $zip = Join-Path $env:RUNNER_TEMP 'mongodb-community-9.0.4.zip'
+          curl.exe --fail --location --retry 3 --max-time 600 'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-9.0.4.zip' --output $zip
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ((Get-FileHash $zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne '1e6234c8c33e75de3659a7e1104cb12f1cb68ae41cba60b625537c1ed9256d43') { throw 'Community ZIP checksum mismatch' }
+          $members = @(tar -tf $zip | Where-Object { $_.EndsWith('/bin/mongod.exe') })
+          if ($members.Count -ne 1) { throw 'Expected one mongod.exe' }
+          $out = Join-Path $env:RUNNER_TEMP 'mongodb-community-9.0.4'
+          New-Item -ItemType Directory -Force $out | Out-Null
+          tar -xf $zip -C $out $members[0]
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "COMMUNITY_BINARY=$(Join-Path $out $members[0])" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          "BSONLITE_CONSOLE_REPO=$(Join-Path $PWD '.console-current')" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Published SDK vs stock Community, including current Console
+        id: published
+        continue-on-error: true
+        shell: pwsh
+        env:
+          QUERY_TARGET: published-0.7.0-alpha.4
+          QUERY_PACKAGE_VERSION: 0.7.0-alpha.4
+          QUERY_REPORT: query-report/published
+        run: node scripts/query-compatibility.cjs
+      - name: Fetch the already validated current core build, without rebuilding or releasing
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 40308893103 -R MohammadAtikurRahman/BsonLite -n BsonLite-modern-npm-31183756a2a3cde31bc04f67f5899b3606545ee4 -D .core-artifact
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $tgz = Get-ChildItem .core-artifact -Recurse -Filter 'bsonlite-sdk-0.7.0-alpha.0.tgz'
+          if (@($tgz).Count -ne 1) { throw 'Expected one current-core tarball' }
+          New-Item -ItemType Directory -Force .core-runtime | Out-Null
+          Set-Content .core-runtime/package.json '{"name":"bsonlite-core-query-validation","private":true}'
+          npm install --prefix .core-runtime --ignore-scripts --no-audit --no-fund $tgz.FullName mongodb@7.7.0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node .core-runtime/node_modules/bsonlite-sdk/scripts/verify-modern.cjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Current core artifact vs stock Community, including current Console
+        id: core
+        continue-on-error: true
+        shell: pwsh
+        env:
+          QUERY_RUNTIME: .core-runtime
+          QUERY_PACKAGE_VERSION: 0.7.0-alpha.0
+          QUERY_TARGET: core-31183756a2a3cde31bc04f67f5899b3606545ee4
+          QUERY_REPORT: query-report/current-core
+        run: node scripts/query-compatibility.cjs
+      - name: Preserve reports, lockfiles and sources (no databases or credentials)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: current-query-audit-${{ github.sha }}
+          path: |
+            query-report/
+            scripts/query-compatibility*.cjs
+            .query-runtime/package-lock.json
+            .core-runtime/package-lock.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Fail on any observed unexpected difference or incomplete execution
+        if: always()
+        shell: pwsh
+        run: |
+          if ('${{ steps.published.outcome }}' -ne 'success' -or '${{ steps.core.outcome }}' -ne 'success') { throw 'Audit found differences or infrastructure failures. Read preserved JSON reports; no full parity claim.' }
