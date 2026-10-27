@@ -17,7 +17,7 @@
 
 দুই engine-এর `buildInfo.version`-ই `9.0.4`। BsonLite custom build-এর `gitVersion` হলো `nogitversion`; stock build-এরটি `64ade602b836c9adeffba7fa038c887ffab56196`। Version একই; binary/source build identity এক বলে দাবি করা হচ্ছে না।
 
-Published SDK-এর compiled SHA-256 `bc5a3cd20dc217c0a4c0255921dad687aa94844fe1730a6ad51bf56b50a83172`; বর্তমান core artifact-এরটি `286a10516ddfc38bbf397d5ac3c5bd2807a29f5df0ff5af78cde608791d2703b`। সেজন্য দুটিকে আলাদা target হিসেবে চালানো হয়েছে। উভয়ের native engine SHA-256 `61d9c95ae1e58d96ac7f74d5aa46e7aefc1f8a3208a86097dbc77c3af62f5307`।
+Published SDK-এর compiled SHA-256 `bc5a3cd20dc217c0a4c0255921dad687aa94844fe1730a6ad51bf56b50a83172`; বর্তমান core artifact-এরটি `286a10516ddfc38bbf397d5ac3c5bd2807a29f5df0ff5af78cde608791d2703b`। সেজন্য দুটিকে আলাদা target হিসেবে চালানো হয়েছে। Published SDK-এর native engine SHA-256 `61d9c95ae1e58d96ac7f74d5aa46e7aefc1f8a3208a86097dbc77c3af62f5307`; বর্তমান core artifact-এর native engine SHA-256 `6898780b2265a2c10583c31288a597a1c3deba064f76d2da7a4b5eacf024b0b9`। অর্থাৎ একই reported engine version হলেও দুটি native binary এক নয়; প্রতিটির নিজস্ব validation ও checksum ধরে পরীক্ষা হয়েছে।
 
 ## Engine-এর ফল
 
