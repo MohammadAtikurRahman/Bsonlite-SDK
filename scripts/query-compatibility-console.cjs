@@ -36,6 +36,16 @@ async function run({lite,community,communityUri,appPassword,name,sdk,canonical,c
     await compare('count','db.people.countDocuments({active:true})',e=>e.db.collection('people').countDocuments({active:true}));
     await compare('indexes','db.people.indexes()',e=>e.db.collection('people').indexes());
     await compare('aggregate-group','db.people.aggregate([{$group:{_id:"$dept",n:{$sum:1}}},{$sort:{_id:1}}])',e=>e.db.collection('people').aggregate([{$group:{_id:'$dept',n:{$sum:1}}},{$sort:{_id:1}}]).toArray());
+    // Mutations use separate, identically named oracle collections on each engine.
+    await compare('insert-one','db.console_writes.insertOne({_id:1,n:2})',e=>e.db.collection('console_oracle').insertOne({_id:1,n:2}));
+    await compare('update-one','db.console_writes.updateOne({_id:1},{$inc:{n:3}})',e=>e.db.collection('console_oracle').updateOne({_id:1},{$inc:{n:3}}));
+    await compare('read-after-update','db.console_writes.findOne({_id:1})',e=>e.db.collection('console_oracle').findOne({_id:1}));
+    await compare('find-one-and-update','db.console_writes.findOneAndUpdate({_id:1},{$inc:{n:1}},{returnDocument:"after"})',e=>e.db.collection('console_oracle').findOneAndUpdate({_id:1},{$inc:{n:1}},{returnDocument:'after'}));
+    const duplicateDirect=[],duplicateConsole=[];
+    for(const e of raw)duplicateDirect.push(await capture(()=>e.db.collection('console_oracle').insertOne({_id:1}),e.BSON));
+    for(const c of [a,b])duplicateConsole.push(await capture(()=>c.run('db.console_writes.insertOne({_id:1})'),consoleBSON));
+    results.push({id:'error-envelope',source:'db.console_writes.insertOne({_id:1})',status:duplicateDirect.every(x=>!x.ok&&x.error.code===11000)&&duplicateConsole.every(x=>!x.ok&&x.error.code===null&&/E11000/.test(x.error.message))?'console-limit':'difference',direct:duplicateDirect,console:duplicateConsole,note:'Connection deliberately converts driver errors into sanitized plain Error messages; the numeric code property is not preserved.'});
+    await compare('delete-one','db.console_writes.deleteOne({_id:1})',e=>e.db.collection('console_oracle').deleteOne({_id:1}));
     // These use the actual interpreter, not an emulation of mongosh syntax.
     await compare('aggregate-limit-before-sort','db.people.aggregate([]).limit(2).sort({_id:-1})',e=>e.db.collection('people').aggregate([]).limit(2).sort({_id:-1}).toArray());
     await compare('aggregate-limit-before-skip','db.people.aggregate([]).limit(2).skip(1)',e=>e.db.collection('people').aggregate([]).limit(2).skip(1).toArray());
